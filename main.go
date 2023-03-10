@@ -18,15 +18,11 @@ func main() {
     //reading hostname
 
     //reading os-release
-    osReleaseStr, err := os.ReadFile("/etc/os-release")
-    if err != nil { log.Fatal(err) }
-    osRelease := strings.Split(string(osReleaseStr), "\n")
+    osRelease := read("/etc/os-release")
     appendArray(osRelease, mainMap, "=")
 
     //reading meminfo
-    meminfoStr, err := os.ReadFile("/proc/meminfo")
-    if err != nil { log.Fatal(err) }
-    meminfo := strings.Split(string(meminfoStr), "\n")
+    meminfo := read("/proc/meminfo")
     for i := range meminfo {
 	meminfo[i] = strings.TrimSuffix(meminfo[i], " kB")
     }
@@ -40,4 +36,11 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
 	key, value, _ := strings.Cut(array[i], splitter)
 	destinationMap[strings.ToUpper(strings.TrimSpace(key))] = strings.TrimSpace(value)
     }
+}
+
+func read(path string) []string {
+    resultStr, err := os.ReadFile(path)
+    if err != nil { log.Fatal(err) }
+    result := strings.Split(string(resultStr), "\n")
+    return result
 }
