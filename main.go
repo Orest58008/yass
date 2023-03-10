@@ -15,8 +15,6 @@ func main() {
     envVars := os.Environ()
     appendArray(envVars, mainMap, "=")
 
-    //reading hostname
-
     //reading os-release
     osRelease := read("/etc/os-release")
     appendArray(osRelease, mainMap, "=")
@@ -27,6 +25,17 @@ func main() {
 	meminfo[i] = strings.TrimSuffix(meminfo[i], " kB")
     }
     appendArray(meminfo, mainMap, ":")
+
+    //reading hostname
+    hostname, err := os.ReadFile("/etc/hostname")
+    if err != nil { log.Fatal(err) }
+    mainMap["HOSTNAME"] = string(hostname)
+
+    //reading kernel version
+    kernelVersion, err := os.ReadFile("/proc/sys/kernel/osrelease")
+    if err != nil { log.Fatal(err) }
+    mainMap["KERNEL_VERSION"] = string(kernelVersion)
+
 
     fmt.Println(mainMap)
 }
