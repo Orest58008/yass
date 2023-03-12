@@ -23,6 +23,8 @@
 
 ## TODO
 * [ ] example configuration
+* [ ] memory and swap represented in MB and GB
+* [ ] uptime support
 * [ ] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
 * [ ] left-side ASCII art support
   * [ ] distro logo for ASCII art

@@ -18,20 +18,23 @@ func main() {
     appendArray(envVars, mainMap, "=")
 
     //reading os-release
-    osRelease := read("/etc/os-release")
-    appendArray(osRelease, mainMap, "=")
+    osrelease := read("/etc/os-release")
+    for i := range osrelease {
+	osrelease[i] = strings.ReplaceAll(osrelease[i], "\"", "")
+    }
+    appendArray(osrelease, mainMap, "=")
 
     //reading meminfo
     meminfo := read("/proc/meminfo")
     for i := range meminfo {
-	meminfo[i] = strings.TrimSuffix(meminfo[i], " kB")
+	meminfo[i] = strings.ReplaceAll(meminfo[i], " kB", "")
     }
     appendArray(meminfo, mainMap, ":")
 
     //reading hostname
     hostname, err := os.ReadFile("/etc/hostname")
     if err != nil { log.Fatal(err) }
-    mainMap["HOSTNAME"] = string(hostname)
+    mainMap["HOSTNAME"] = strings.TrimSpace(string(hostname)) 
 
     //reading kernel version
     kernelVersion, err := os.ReadFile("/proc/sys/kernel/osrelease")
@@ -55,7 +58,7 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
 func read(path string) []string {
     resultStr, err := os.ReadFile(path)
     if err != nil { log.Fatal(err) }
-    result := strings.Split(string(resultStr), "\n")
+result := strings.Split(string(resultStr), "\n")
     return result
 }
 
@@ -63,6 +66,17 @@ func parseConfig(pathToConfig string) []string {
     configStr, err := os.ReadFile(pathToConfig)
     if err != nil { log.Fatal(err) }
     config := strings.Split(string(configStr), "\n")
+
+    //parsing values
+    for i := range config {
+	line := strings.Split(config[i], "|")
+	for j := range line {
+	    val, ok := mainMap[line[j]]
+	    if ok { line[j] = val }
+	}
+	line = append(line, "<>")
+	config[i] = strings.Join(line, "")
+    }
 
     //parsing basic styling
     for i := range config {
@@ -110,15 +124,6 @@ func parseConfig(pathToConfig string) []string {
 	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\u001b[46m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\u001b[47m;1m")
     }
-
-    //parsing values
-    for i := range config {
-	line := strings.Split(config[i], "|")
-	for j := range line {
-	    val, ok := mainMap[line[j]]
-	    if ok { line[j] = val }
-	}
-	config[i] = strings.Join(line, "")
-    }
+    
     return config
 }

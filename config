@@ -1,2 +1,5 @@
-<b>Кернель<>    <cyan>|KERNEL_VERSION|<>
-<b>Користувач<> <cyan>|USER|<>
+ <blue><b><u>|USER|<>@<blue><b><u>|HOSTNAME|
+ <cyan><b>os<>     |PRETTY_NAME|
+ <cyan><b>kernel<> |KERNEL_VERSION|
+ <cyan><b>memory<> |MEMFREE| / |MEMTOTAL| kB
+ <cyan><b>swap<>   |SWAPFREE| / |SWAPTOTAL| kB
