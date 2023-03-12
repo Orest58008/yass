@@ -23,6 +23,7 @@
 
 ## TODO
 * [ ] example configuration
+* [ ] config in ~/.config/yass
 * [ ] memory and swap represented in MB and GB
 * [ ] uptime support
 * [ ] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
