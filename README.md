@@ -26,6 +26,6 @@
 * [ ] config in ~/.config/yass
 * [ ] memory and swap represented in MB and GB
 * [ ] uptime support
-* [ ] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
+* [x] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
 * [ ] left-side ASCII art support
   * [ ] distro logo for ASCII art

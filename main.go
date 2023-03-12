@@ -43,8 +43,8 @@ func main() {
 
     //reading config and outputting final result
     result := parseConfig("./config")
-    for i := range result {
-	fmt.Println(result[i])
+    for i := 0; i < len(result) - 1; i++ {
+        fmt.Println(result[i])
     }
 }
 
@@ -123,6 +123,18 @@ func parseConfig(pathToConfig string) []string {
 	config[i] = strings.ReplaceAll(config[i], "<bgbrmagenta>", "\u001b[45m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\u001b[46m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\u001b[47m;1m")
+	//distro color
+	switch mainMap["NAME"] {
+	case "Ubuntu", "Debian":
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[31m") //red
+	case "OpenSUSE", "Linux Mint":
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[32m") //green
+	case "Fedora Linux", "Slackware":
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[34m") //blue
+	case "Gentoo":
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[35m") //magenta
+	case "Arch Linux":
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[36m") //cyan
     }
     
     return config
