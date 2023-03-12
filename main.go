@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -26,9 +27,6 @@ func main() {
 
     //reading meminfo
     meminfo := read("/proc/meminfo")
-    for i := range meminfo {
-	meminfo[i] = strings.ReplaceAll(meminfo[i], " kB", "")
-    }
     appendArray(meminfo, mainMap, ":")
 
     //reading hostname
@@ -51,14 +49,24 @@ func main() {
 func appendArray(array []string, destinationMap map[string]string, splitter string) {
     for i := range array {
 	key, value, _ := strings.Cut(array[i], splitter)
-	destinationMap[strings.ToUpper(strings.TrimSpace(key))] = strings.TrimSpace(value)
+	value = strings.TrimSpace(value)
+	if strings.Contains(value, "kB") {
+            value = strings.ReplaceAll(value, " kB", "")
+	    valueNum, err := strconv.Atoi(value)
+	    if err != nil { log.Fatal(err) }
+	    valueMb := valueNum / 1024
+	    valueGb := valueMb / 1024
+	    destinationMap[strings.ToUpper(strings.TrimSpace(key))+"_MB"] = strconv.Itoa(valueMb)
+	    destinationMap[strings.ToUpper(strings.TrimSpace(key))+"_GB"] = strconv.Itoa(valueGb)
+	}
+	destinationMap[strings.ToUpper(strings.TrimSpace(key))] = value
     }
 }
 
 func read(path string) []string {
     resultStr, err := os.ReadFile(path)
     if err != nil { log.Fatal(err) }
-result := strings.Split(string(resultStr), "\n")
+    result := strings.Split(string(resultStr), "\n")
     return result
 }
 
@@ -135,6 +143,7 @@ func parseConfig(pathToConfig string) []string {
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[35m") //magenta
 	case "Arch Linux":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[36m") //cyan
+	}
     }
     
     return config
