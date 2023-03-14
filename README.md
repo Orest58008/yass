@@ -7,9 +7,9 @@
 
 ## Configuration
 ### ANSI styling
-* `<b>` for **bold text**
+* `<b>` for bold text
 * `<d>` for dimmed
-* `<i>` for _italics_
+* `<i>` for italics
 * `<u>` for underline
 * `<uu>` for double underline
 * `<s>` for strikethrough
