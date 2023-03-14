@@ -58,7 +58,7 @@ func main() {
     //reading configs
     var result []string 
     var art []string 
-    if _, err := os.Stat("~/.config/yass/config"); !os.IsNotExist(err) {
+    if _, err := os.Stat("~/.config/yass/"); !os.IsNotExist(err) {
 	result = parseConfig("~/.config/yass/config", false)
 	art = parseConfig("~/.config/yass/art", true)
     } else {
