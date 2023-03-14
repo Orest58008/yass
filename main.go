@@ -40,6 +40,21 @@ func main() {
     if err != nil { log.Fatal(err) }
     mainMap["KERNEL_VERSION"] = strings.TrimSpace(string(kernelVersion))
 
+    //reading uptime
+    uptimeStr, err := os.ReadFile("/proc/uptime")
+    if err != nil { log.Fatal(err) }
+    uptimeArr := strings.Split(string(uptimeStr), " ")
+    uptimeSecsFloat, err := strconv.ParseFloat(uptimeArr[0], 64)
+    if err != nil { log.Fatal(err) }
+    uptimeSecs := int(uptimeSecsFloat)
+    uptimeHrs := uptimeSecs / 3600
+    uptimeSecs -= uptimeHrs * 3600
+    uptimeMins := uptimeSecs / 60
+    uptimeSecs -= uptimeMins * 60
+    mainMap["UPTIME_HRS"] = strconv.Itoa(uptimeHrs)
+    mainMap["UPTIME_MINS"] = strconv.Itoa(uptimeMins)
+    mainMap["UPTIME_SECS"] = strconv.Itoa(uptimeSecs)
+
     //reading configs
     var result []string 
     var art []string 
