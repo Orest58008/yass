@@ -27,12 +27,15 @@
   * names are the same as in source(e.g. `MEMREE` for free memory); hostname is `HOSTNAME`, kernel version is `KERNEL_VERSION`
   * the name should be in ALL CAPS
   * by default, meminfo values are in kB, for values in MiB and GiB use `VARIABLE_MB` and `VARIABLE_GB`
+  * uptime in seconds, minutes and hours is `UPTIME_SECS`, `UPTIME_MINS`, `UPTIME_HRS`
 
 ## TODO
 * [x] example configuration
 * [x] config in ~/.config/yass
 * [x] memory and swap represented in MB and GB
-* [ ] uptime support
+* [x] uptime support
 * [x] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
 * [x] left-side ASCII art support
   * [ ] distro logo for ASCII art
+* [ ] add package count support
+* [ ] add used memory and used swap support
