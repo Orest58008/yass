@@ -1,5 +1,0 @@
- <blue><b><u>|USER|<>@<blue><b><u>|HOSTNAME|
- <cyan><b>os<>     |PRETTY_NAME|
- <cyan><b>kernel<> |KERNEL_VERSION|
- <cyan><b>memory<> |MEMFREE_MB| / |MEMTOTAL_MB| MiB
- <cyan><b>swap<>   |SWAPFREE_MB| / |SWAPTOTAL_MB| MiB

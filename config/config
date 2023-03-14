@@ -1,0 +1,5 @@
+ <distrocolor><b><u>|USER|<>@<blue><b><u>|HOSTNAME|
+ <distrocolor><b>os<>     |PRETTY_NAME|
+ <distrocolor><b>kernel<> |KERNEL_VERSION|
+ <distrocolor><b>memory<> |MEMFREE_MB| / |MEMTOTAL_MB| MiB
+ <distrocolor><b>swap<>   |SWAPFREE_MB| / |SWAPTOTAL_MB| MiB

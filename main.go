@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"math"
 )
 
 //map to store values later outputted
@@ -39,10 +40,37 @@ func main() {
     if err != nil { log.Fatal(err) }
     mainMap["KERNEL_VERSION"] = strings.TrimSpace(string(kernelVersion))
 
-    //reading config and outputting final result
-    result := parseConfig("./config")
-    for i := 0; i < len(result) - 1; i++ {
-        fmt.Println(result[i])
+    //reading configs
+    var result []string 
+    var art []string 
+    if _, err := os.Stat("~/.config/yass/config"); !os.IsNotExist(err) {
+	result = parseConfig("~/.config/yass/config", false)
+	art = parseConfig("~/.config/yass/art", true)
+    } else {
+	result = parseConfig("./config/config", false)
+	art = parseConfig("./config/art", true)
+    }
+    
+    //printing results
+    artSize := len(art) - 1
+    resultSize := len(result) - 1
+    sizeDifference := math.Abs(float64(artSize - resultSize) / 2)
+    if artSize > resultSize {
+	for i := 0; i < artSize; i++ {
+	    if i >= int(math.Floor(sizeDifference)) && i <= resultSize + int(math.Floor(sizeDifference)) {
+                fmt.Println(art[i], result[i - int(math.Floor(sizeDifference))])
+	    } else {
+		fmt.Println(art[i])
+	    }
+	}
+    } else {
+	for i := 0; i < resultSize; i++ {
+	    if i >= int(math.Floor(sizeDifference)) && i <= artSize + int(math.Floor(sizeDifference)) {
+                fmt.Println(art[i - int(math.Floor(sizeDifference))], result[i])
+	    } else {
+		fmt.Println(result[i])
+	    }
+	}
     }
 }
 
@@ -70,7 +98,7 @@ func read(path string) []string {
     return result
 }
 
-func parseConfig(pathToConfig string) []string {
+func parseConfig(pathToConfig string, prependDistrocolor bool) []string {
     configStr, err := os.ReadFile(pathToConfig)
     if err != nil { log.Fatal(err) }
     config := strings.Split(string(configStr), "\n")
@@ -83,66 +111,71 @@ func parseConfig(pathToConfig string) []string {
 	    if ok { line[j] = val }
 	}
 	line = append(line, "<>")
+	if prependDistrocolor { line = append([]string{"<distrocolor>"}, line...) }
 	config[i] = strings.Join(line, "")
     }
 
     //parsing basic styling
     for i := range config {
 	//clear styles
-	config[i] = strings.ReplaceAll(config[i], "<c>", "\u001b[0m")
-	config[i] = strings.ReplaceAll(config[i], "<>", "\u001b[0m")
-        //bold, underlined and reversed
-	config[i] = strings.ReplaceAll(config[i], "<b>", "\u001b[1m")
-	config[i] = strings.ReplaceAll(config[i], "<u>", "\u001b[4m")
-	config[i] = strings.ReplaceAll(config[i], "<r>", "\u001b[7m")
+	config[i] = strings.ReplaceAll(config[i], "<c>", "\x1B[0m")
+	config[i] = strings.ReplaceAll(config[i], "<>", "\x1B[0m")
+        //decorations
+	config[i] = strings.ReplaceAll(config[i], "<b>", "\x1B[1m")
+	config[i] = strings.ReplaceAll(config[i], "<d>", "\x1B[2m")
+	config[i] = strings.ReplaceAll(config[i], "<i>", "\x1B[3m")
+	config[i] = strings.ReplaceAll(config[i], "<u>", "\x1B[4m")
+	config[i] = strings.ReplaceAll(config[i], "<uu>", "\x1B[21m")
+	config[i] = strings.ReplaceAll(config[i], "<r>", "\x1B[7m")
+	config[i] = strings.ReplaceAll(config[i], "<s>", "\x1B[9m")
         //colors
-	config[i] = strings.ReplaceAll(config[i], "<black>", "\u001b[30m")
-	config[i] = strings.ReplaceAll(config[i], "<red>", "\u001b[31m")
-	config[i] = strings.ReplaceAll(config[i], "<green>", "\u001b[32m")
-	config[i] = strings.ReplaceAll(config[i], "<yellow>", "\u001b[33m")
-	config[i] = strings.ReplaceAll(config[i], "<blue>", "\u001b[34m")
-	config[i] = strings.ReplaceAll(config[i], "<magenta>", "\u001b[35m")
-	config[i] = strings.ReplaceAll(config[i], "<cyan>", "\u001b[36m")
-	config[i] = strings.ReplaceAll(config[i], "<white>", "\u001b[37m")
+	config[i] = strings.ReplaceAll(config[i], "<black>", "\x1B[30m")
+	config[i] = strings.ReplaceAll(config[i], "<red>", "\x1B[31m")
+	config[i] = strings.ReplaceAll(config[i], "<green>", "\x1B[32m")
+	config[i] = strings.ReplaceAll(config[i], "<yellow>", "\x1B[33m")
+	config[i] = strings.ReplaceAll(config[i], "<blue>", "\x1B[34m")
+	config[i] = strings.ReplaceAll(config[i], "<magenta>", "\x1B[35m")
+	config[i] = strings.ReplaceAll(config[i], "<cyan>", "\x1B[36m")
+	config[i] = strings.ReplaceAll(config[i], "<white>", "\x1B[37m")
 	//bright colors
-	config[i] = strings.ReplaceAll(config[i], "<brblack>", "\u001b[30m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brred>", "\u001b[31m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brgreen>", "\u001b[32m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bryellow>", "\u001b[33m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brblue>", "\u001b[34m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brmagenta>", "\u001b[35m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brcyan>", "\u001b[36m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brwhite>", "\u001b[37m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brblack>", "\x1B[30m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brred>", "\x1B[31m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brgreen>", "\x1B[32m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bryellow>", "\x1B[33m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brblue>", "\x1B[34m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brmagenta>", "\x1B[35m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brcyan>", "\x1B[36m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<brwhite>", "\x1B[37m;1m")
 	//background colors
-	config[i] = strings.ReplaceAll(config[i], "<bgblack>", "\u001b[40m")
-	config[i] = strings.ReplaceAll(config[i], "<bgred>", "\u001b[41m")
-	config[i] = strings.ReplaceAll(config[i], "<bggreen>", "\u001b[42m")
-	config[i] = strings.ReplaceAll(config[i], "<bgyellow>", "\u001b[43m")
-	config[i] = strings.ReplaceAll(config[i], "<bgblue>", "\u001b[44m")
-	config[i] = strings.ReplaceAll(config[i], "<bgmagenta>", "\u001b[45m")
-	config[i] = strings.ReplaceAll(config[i], "<bgcyan>", "\u001b[46m")
-	config[i] = strings.ReplaceAll(config[i], "<bgwhite>", "\u001b[47m")
+	config[i] = strings.ReplaceAll(config[i], "<bgblack>", "\x1B[40m")
+	config[i] = strings.ReplaceAll(config[i], "<bgred>", "\x1B[41m")
+	config[i] = strings.ReplaceAll(config[i], "<bggreen>", "\x1B[42m")
+	config[i] = strings.ReplaceAll(config[i], "<bgyellow>", "\x1B[43m")
+	config[i] = strings.ReplaceAll(config[i], "<bgblue>", "\x1B[44m")
+	config[i] = strings.ReplaceAll(config[i], "<bgmagenta>", "\x1B[45m")
+	config[i] = strings.ReplaceAll(config[i], "<bgcyan>", "\x1B[46m")
+	config[i] = strings.ReplaceAll(config[i], "<bgwhite>", "\x1B[47m")
 	//background bright colors
-	config[i] = strings.ReplaceAll(config[i], "<bgbrblack>", "\u001b[40m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrred>", "\u001b[41m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrgreen>", "\u001b[42m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbryellow>", "\u001b[43m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrblue>", "\u001b[44m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrmagenta>", "\u001b[45m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\u001b[46m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\u001b[47m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrblack>", "\x1B[40m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrred>", "\x1B[41m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrgreen>", "\x1B[42m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbryellow>", "\x1B[43m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrblue>", "\x1B[44m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrmagenta>", "\x1B[45m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\x1B[46m;1m")
+	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\x1B[47m;1m")
 	//distro color
 	switch mainMap["NAME"] {
 	case "Ubuntu", "Debian":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[31m") //red
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[31m") //red
 	case "OpenSUSE", "Linux Mint":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[32m") //green
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[32m") //green
 	case "Fedora Linux", "Slackware":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[34m") //blue
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[34m") //blue
 	case "Gentoo":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[35m") //magenta
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[35m") //magenta
 	case "Arch Linux":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\u001b[36m") //cyan
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[36m") //cyan
 	}
     }
     

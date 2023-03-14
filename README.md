@@ -7,8 +7,12 @@
 
 ## Configuration
 ### ANSI styling
-* `<b>` for bold text
+* `<b>` for **bold text**
+* `<d>` for dimmed
+* `<i>` for _italics_
 * `<u>` for underline
+* `<uu>` for double underline
+* `<s>` for strikethrough
 * `<r>` for reversed colors
 * `<c>` or `<>` to clear all styling including color
 ### Colors
@@ -26,9 +30,9 @@
 
 ## TODO
 * [x] example configuration
-* [ ] config in ~/.config/yass
+* [x] config in ~/.config/yass
 * [x] memory and swap represented in MB and GB
 * [ ] uptime support
 * [x] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
-* [ ] left-side ASCII art support
+* [x] left-side ASCII art support
   * [ ] distro logo for ASCII art
