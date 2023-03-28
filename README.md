@@ -32,10 +32,12 @@
 ## TODO
 * [x] example configuration
 * [x] config in ~/.config/yass
-* [x] memory and swap represented in MB and GB
+* [x] memory and swap represented in MiB and GiB
 * [x] uptime support
 * [x] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
 * [x] left-side ASCII art support
   * [ ] distro logo for ASCII art
 * [ ] add package count support
 * [ ] add used memory and used swap support
+* [ ] add option flags like path to config file or color disabling
+* [ ] NO\_COLOR support

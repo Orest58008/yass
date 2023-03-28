@@ -181,9 +181,9 @@ func parseConfig(pathToConfig string, prependDistrocolor bool) []string {
 	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\x1B[47m;1m")
 	//distro color
 	switch mainMap["NAME"] {
-	case "Ubuntu", "Debian":
+	case "Debian", "Ubuntu":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[31m") //red
-	case "OpenSUSE", "Linux Mint":
+	case "Linux Mint", "OpenSUSE", "Void":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[32m") //green
 	case "Fedora Linux", "Slackware":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[34m") //blue
@@ -191,6 +191,8 @@ func parseConfig(pathToConfig string, prependDistrocolor bool) []string {
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[35m") //magenta
 	case "Arch Linux":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[36m") //cyan
+	default:
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[37m") //white
 	}
     }
     
