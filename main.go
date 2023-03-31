@@ -180,19 +180,20 @@ func parseConfig(pathToConfig string, prependDistrocolor bool) []string {
 	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\x1B[46m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\x1B[47m;1m")
 	//distro color
-	switch mainMap["NAME"] {
-	case "Debian", "Ubuntu":
+	switch mainMap["ID"] {
+	case "centos", "debian", "rhel", "ubuntu":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[31m") //red
-	case "Linux Mint", "OpenSUSE", "Void":
+	case "linux-mint", "opensuse-leap", "opensuse-tumbleweed", "void":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[32m") //green
-	case "Fedora Linux", "Slackware":
+	case "alpine", "fedora", "kali", "slackware", "scientific":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[34m") //blue
-	case "Gentoo":
+	case "gentoo":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[35m") //magenta
-	case "Arch Linux":
+	case "arch", "clearlinux", "mageia":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[36m") //cyan
 	default:
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[37m") //white
+	//TODO: test clearlinux, linux-mint properly
 	}
     }
     
