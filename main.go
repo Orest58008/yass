@@ -56,34 +56,39 @@ func main() {
     mainMap["UPTIME_SECS"] = strconv.Itoa(uptimeSecs)
 
     //reading configs
-    var result []string 
-    var art []string 
+    var config = []string{" <distrocolor><d><b><u>|USER|<>@<distrocolor><d><b><u>|HOSTNAME|",
+	      " <distrocolor><b>os<>     |PRETTY_NAME|",
+	      " <distrocolor><b>kernel<> |KERNEL_VERSION|",
+	      " <distrocolor><b>memory<> |MEMFREE_MB| / |MEMTOTAL_MB| MiB",
+	      " <distrocolor><b>swap<>   |SWAPFREE_MB| / |SWAPTOTAL_MB| MiB",
+	      " <distrocolor><b>uptime<> |UPTIME_HRS|:|UPTIME_MINS|:|UPTIME_SECS|", ""}
+    var art = []string{"<b>\\   ", "<b>\\\\  ", "<b> \\\\ ", "<b>  \\\\", "<b>  //", "<b> // ", "<b>//  ", "<b>/   ", ""}
+
     if _, err := os.Stat(mainMap["HOME"] + "/.config/yass/"); !os.IsNotExist(err) {
-	result = parseConfig(mainMap["HOME"] + "/.config/yass/config", false)
-	art = parseConfig(mainMap["HOME"] + "/.config/yass/art", true)
-    } else {
-	result = parseConfig("./config/config", false)
-	art = parseConfig("./config/art", true)
+        config = getConfig(mainMap["HOME"] + "/.config/yass/config")
+	art = getConfig(mainMap["HOME"] + "/.config/yass/art")
     }
-    
+    config = parseConfig(config, false)
+    art = parseConfig(art, true)
+
     //printing results
     artSize := len(art) - 1
-    resultSize := len(result) - 1
-    sizeDifference := math.Abs(float64(artSize - resultSize) / 2)
-    if artSize > resultSize {
+    configSize := len(config) - 1
+    sizeDifference := math.Abs(float64(artSize - configSize) / 2)
+    if artSize > configSize {
 	for i := 0; i < artSize; i++ {
-	    if i >= int(math.Floor(sizeDifference)) && i <= resultSize + int(math.Floor(sizeDifference)) {
-                fmt.Println(art[i], result[i - int(math.Floor(sizeDifference))])
+	    if i >= int(math.Floor(sizeDifference)) && i <= configSize + int(math.Floor(sizeDifference)) {
+                fmt.Println(art[i], config[i - int(math.Floor(sizeDifference))])
 	    } else {
 		fmt.Println(art[i])
 	    }
 	}
     } else {
-	for i := 0; i < resultSize; i++ {
+	for i := 0; i < configSize; i++ {
 	    if i >= int(math.Floor(sizeDifference)) && i <= artSize + int(math.Floor(sizeDifference)) {
-                fmt.Println(art[i - int(math.Floor(sizeDifference))], result[i])
+                fmt.Println(art[i - int(math.Floor(sizeDifference))], config[i])
 	    } else {
-		fmt.Println(result[i])
+		fmt.Println(config[i])
 	    }
 	}
     }
@@ -113,11 +118,16 @@ func read(path string) []string {
     return result
 }
 
-func parseConfig(pathToConfig string, prependDistrocolor bool) []string {
+func getConfig(pathToConfig string) []string {
     configStr, err := os.ReadFile(pathToConfig)
     if err != nil { log.Fatal(err) }
     config := strings.Split(string(configStr), "\n")
 
+    return config
+}
+
+
+func parseConfig(config []string, prependDistrocolor bool) []string {
     //parsing values
     for i := range config {
 	line := strings.Split(config[i], "|")
@@ -183,17 +193,16 @@ func parseConfig(pathToConfig string, prependDistrocolor bool) []string {
 	switch mainMap["ID"] {
 	case "centos", "debian", "rhel", "ubuntu":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[31m") //red
-	case "linux-mint", "opensuse-leap", "opensuse-tumbleweed", "void":
+	case "linux-mint", "manjaro", "nixos", "opensuse-leap", "opensuse-tumbleweed", "void":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[32m") //green
 	case "alpine", "fedora", "kali", "slackware", "scientific":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[34m") //blue
-	case "gentoo":
+	case "endeavouros", "gentoo":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[35m") //magenta
 	case "arch", "clearlinux", "mageia":
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[36m") //cyan
 	default:
 	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[37m") //white
-	//TODO: test clearlinux, linux-mint properly
 	}
     }
     
