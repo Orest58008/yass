@@ -190,21 +190,31 @@ func parseConfig(config []string, prependDistrocolor bool) []string {
 	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\x1B[46m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\x1B[47m;1m")
 	//distro color
-	switch mainMap["ID"] {
-	case "centos", "debian", "rhel", "ubuntu":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[31m") //red
-	case "linux-mint", "manjaro", "nixos", "opensuse-leap", "opensuse-tumbleweed", "void":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[32m") //green
-	case "alpine", "fedora", "kali", "slackware", "scientific":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[34m") //blue
-	case "endeavouros", "gentoo":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[35m") //magenta
-	case "arch", "clearlinux", "mageia":
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[36m") //cyan
-	default:
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", "\x1B[37m") //white
+	idLike := strings.Split(mainMap["ID_LIKE"], " ")
+
+	if distroColor(mainMap["ID"]) != "" {
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", distroColor(mainMap["ID"]))
+	} else {
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", idLike[0])
 	}
     }
     
     return config
+}
+
+func distroColor(distroID string) string {
+    switch mainMap["ID"] {
+	case "centos", "debian", "rhel", "ubuntu":
+	    return "\x1B[31m"
+	case "linux-mint", "manjaro", "nixos", "opensuse-leap", "opensuse-tumbleweed", "void":
+	    return "\x1B[32m"
+	case "alpine", "fedora", "kali", "slackware", "scientific":
+	    return "\x1B[34m"
+	case "endeavouros", "gentoo":
+	    return "\x1B[35m"
+	case "arch", "clearlinux", "mageia":
+	    return "\x1B[36m"
+	default:
+	    return ""
+    }
 }
