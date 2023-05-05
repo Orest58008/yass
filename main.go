@@ -142,6 +142,7 @@ func parseConfig(config []string, prependDistrocolor bool) []string {
 
     //parsing basic styling
     for i := range config {
+	/*
 	//clear styles
 	config[i] = strings.ReplaceAll(config[i], "<c>", "\x1B[0m")
 	config[i] = strings.ReplaceAll(config[i], "<>", "\x1B[0m")
@@ -189,6 +190,62 @@ func parseConfig(config []string, prependDistrocolor bool) []string {
 	config[i] = strings.ReplaceAll(config[i], "<bgbrmagenta>", "\x1B[45m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\x1B[46m;1m")
 	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\x1B[47m;1m")
+	*/
+
+	styleSheet := map[string]string{
+	    //clear all styling and coloring
+	    "<c>": "\x1B[0m",
+	    "<>":  "\x1B[0m",
+	    //text styling
+	    "<b>":  "\x1B[1m",
+	    "<d>":  "\x1B[2m",
+	    "<i>":  "\x1B[3m",
+	    "<u>":  "\x1B[4m",
+	    "<uu>": "\x1B[21m",
+	    "<r>":  "\x1B[7m",
+	    "<s>":  "\x1B[9m",
+	    //coloring
+	    "<black>":   "\x1B[30m",
+	    "<red>":     "\x1B[31m",
+	    "<green>":   "\x1B[32m",
+	    "<yellow>":  "\x1B[33m",
+	    "<blue>":    "\x1B[34m",
+	    "<magenta>": "\x1B[35m",
+	    "<cyan>":    "\x1B[36m",
+	    "<white>":   "\x1B[37m",
+	    //bright coloring
+	    "<brblack>":   "\x1B[30m;1m",
+	    "<brred>":     "\x1B[31m;1m",
+	    "<brgreen>":   "\x1B[32m;1m",
+	    "<bryellow>":  "\x1B[33m;1m",
+	    "<brblue>":    "\x1B[34m;1m",
+	    "<brmagenta>": "\x1B[35m;1m",
+	    "<brcyan>":    "\x1B[36m;1m",
+	    "<brwhite>":   "\x1B[37m;1m",
+	    //background coloring
+	    "<bgblack>":   "\x1B[40m",
+	    "<bgred>":     "\x1B[41m",
+	    "<bggreen>":   "\x1B[42m",
+	    "<bgyellow>":  "\x1B[43m",
+	    "<bgblue>":    "\x1B[44m",
+	    "<bgmagenta>": "\x1B[45m",
+	    "<bgcyan>":    "\x1B[46m",
+	    "<bgwhite>":   "\x1B[47m",
+	    //bright background coloring
+	    "<bgbrblack>":   "\x1B[40m;1m",
+	    "<bgbrred>":     "\x1B[41m;1m",
+	    "<bgbrgreen>":   "\x1B[42m;1m",
+	    "<bgbryellow>":  "\x1B[43m;1m",
+	    "<bgbrblue>":    "\x1B[44m;1m",
+	    "<bgbrmagenta>": "\x1B[45m;1m",
+	    "<bgbrcyan>":    "\x1B[46m;1m",
+	    "<bgbrwhite>":   "\x1B[47m;1m",
+	}
+	
+	for key, code := range styleSheet {
+	    config[i] = strings.ReplaceAll(config[i], key, code)
+	}
+
 	//distro color
 	idLike := strings.Split(mainMap["ID_LIKE"], " ")
 
