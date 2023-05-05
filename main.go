@@ -29,6 +29,13 @@ func main() {
     //reading meminfo
     meminfo := read("/proc/meminfo")
     appendArray(meminfo, mainMap, ":")
+    //adding MEMUSED and SWAPUSED
+    calculateUsedMemory("MEMFREE", "MEMTOTAL", "MEMUSED");
+    calculateUsedMemory("MEMFREE_MB", "MEMTOTAL_MB", "MEMUSED_MB");
+    calculateUsedMemory("MEMFREE_GB", "MEMTOTAL_GB", "MEMUSED_GB");
+    calculateUsedMemory("SWAPFREE", "SWAPTOTAL", "SWAPUSED");
+    calculateUsedMemory("SWAPFREE_MB", "SWAPTOTAL_MB", "SWAPUSED_MB");
+    calculateUsedMemory("SWAPFREE_GB", "SWAPTOTAL_GB", "SWAPUSED_GB");
 
     //reading hostname
     hostname, err := os.ReadFile("/etc/hostname")
@@ -65,8 +72,8 @@ func main() {
     var art = []string{"<b>\\   ", "<b>\\\\  ", "<b> \\\\ ", "<b>  \\\\", "<b>  //", "<b> // ", "<b>//  ", "<b>/   ", ""}
 
     if _, err := os.Stat(mainMap["HOME"] + "/.config/yass/"); !os.IsNotExist(err) {
-        config = getConfig(mainMap["HOME"] + "/.config/yass/config")
-	art = getConfig(mainMap["HOME"] + "/.config/yass/art")
+        config = read(mainMap["HOME"] + "/.config/yass/config")
+	art = read(mainMap["HOME"] + "/.config/yass/art")
     }
     config = parseConfig(config, false)
     art = parseConfig(art, true)
@@ -94,6 +101,23 @@ func main() {
     }
 }
 
+func read(path string) []string {
+    resultStr, err := os.ReadFile(path)
+    if err != nil { log.Fatal(err) }
+    result := strings.Split(string(resultStr), "\n")
+
+    return result
+}
+
+func calculateUsedMemory(freeKey string, totalKey string, resultKey string) {
+    memfree, err := strconv.Atoi(mainMap[freeKey])
+    if err != nil { log.Fatal(err) }
+    memtotal, err := strconv.Atoi(mainMap[totalKey])
+    if err != nil { log.Fatal(err) }
+    memused := memtotal - memfree
+    mainMap["resultKey"] = strconv.Itoa(memused)
+}
+
 func appendArray(array []string, destinationMap map[string]string, splitter string) {
     for i := range array {
 	key, value, _ := strings.Cut(array[i], splitter)
@@ -111,22 +135,6 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
     }
 }
 
-func read(path string) []string {
-    resultStr, err := os.ReadFile(path)
-    if err != nil { log.Fatal(err) }
-    result := strings.Split(string(resultStr), "\n")
-    return result
-}
-
-func getConfig(pathToConfig string) []string {
-    configStr, err := os.ReadFile(pathToConfig)
-    if err != nil { log.Fatal(err) }
-    config := strings.Split(string(configStr), "\n")
-
-    return config
-}
-
-
 func parseConfig(config []string, prependDistrocolor bool) []string {
     //parsing values
     for i := range config {
@@ -142,56 +150,6 @@ func parseConfig(config []string, prependDistrocolor bool) []string {
 
     //parsing basic styling
     for i := range config {
-	/*
-	//clear styles
-	config[i] = strings.ReplaceAll(config[i], "<c>", "\x1B[0m")
-	config[i] = strings.ReplaceAll(config[i], "<>", "\x1B[0m")
-        //decorations
-	config[i] = strings.ReplaceAll(config[i], "<b>", "\x1B[1m")
-	config[i] = strings.ReplaceAll(config[i], "<d>", "\x1B[2m")
-	config[i] = strings.ReplaceAll(config[i], "<i>", "\x1B[3m")
-	config[i] = strings.ReplaceAll(config[i], "<u>", "\x1B[4m")
-	config[i] = strings.ReplaceAll(config[i], "<uu>", "\x1B[21m")
-	config[i] = strings.ReplaceAll(config[i], "<r>", "\x1B[7m")
-	config[i] = strings.ReplaceAll(config[i], "<s>", "\x1B[9m")
-        //colors
-	config[i] = strings.ReplaceAll(config[i], "<black>", "\x1B[30m")
-	config[i] = strings.ReplaceAll(config[i], "<red>", "\x1B[31m")
-	config[i] = strings.ReplaceAll(config[i], "<green>", "\x1B[32m")
-	config[i] = strings.ReplaceAll(config[i], "<yellow>", "\x1B[33m")
-	config[i] = strings.ReplaceAll(config[i], "<blue>", "\x1B[34m")
-	config[i] = strings.ReplaceAll(config[i], "<magenta>", "\x1B[35m")
-	config[i] = strings.ReplaceAll(config[i], "<cyan>", "\x1B[36m")
-	config[i] = strings.ReplaceAll(config[i], "<white>", "\x1B[37m")
-	//bright colors
-	config[i] = strings.ReplaceAll(config[i], "<brblack>", "\x1B[30m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brred>", "\x1B[31m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brgreen>", "\x1B[32m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bryellow>", "\x1B[33m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brblue>", "\x1B[34m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brmagenta>", "\x1B[35m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brcyan>", "\x1B[36m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<brwhite>", "\x1B[37m;1m")
-	//background colors
-	config[i] = strings.ReplaceAll(config[i], "<bgblack>", "\x1B[40m")
-	config[i] = strings.ReplaceAll(config[i], "<bgred>", "\x1B[41m")
-	config[i] = strings.ReplaceAll(config[i], "<bggreen>", "\x1B[42m")
-	config[i] = strings.ReplaceAll(config[i], "<bgyellow>", "\x1B[43m")
-	config[i] = strings.ReplaceAll(config[i], "<bgblue>", "\x1B[44m")
-	config[i] = strings.ReplaceAll(config[i], "<bgmagenta>", "\x1B[45m")
-	config[i] = strings.ReplaceAll(config[i], "<bgcyan>", "\x1B[46m")
-	config[i] = strings.ReplaceAll(config[i], "<bgwhite>", "\x1B[47m")
-	//background bright colors
-	config[i] = strings.ReplaceAll(config[i], "<bgbrblack>", "\x1B[40m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrred>", "\x1B[41m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrgreen>", "\x1B[42m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbryellow>", "\x1B[43m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrblue>", "\x1B[44m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrmagenta>", "\x1B[45m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrcyan>", "\x1B[46m;1m")
-	config[i] = strings.ReplaceAll(config[i], "<bgbrwhite>", "\x1B[47m;1m")
-	*/
-
 	styleSheet := map[string]string{
 	    //clear all styling and coloring
 	    "<c>": "\x1B[0m",

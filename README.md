@@ -38,6 +38,6 @@
 * [x] left-side ASCII art support
   * [ ] distro logo for ASCII art
 * [ ] add package count support
-* [ ] add used memory and used swap support
+* [x] add used memory and used swap support
 * [ ] add option flags like path to config file or color disabling
 * [ ] NO\_COLOR support
