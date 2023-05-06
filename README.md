@@ -28,16 +28,3 @@
   * the name should be in ALL CAPS
   * by default, meminfo values are in kB, for values in MiB and GiB use `VARIABLE_MB` and `VARIABLE_GB`
   * uptime in seconds, minutes and hours is `UPTIME_SECS`, `UPTIME_MINS`, `UPTIME_HRS`
-
-## TODO
-* [x] example configuration
-* [x] config in ~/.config/yass
-* [x] memory and swap represented in MiB and GiB
-* [x] uptime support
-* [x] automatic distro color detection(e.g. cyan for Arch, red for Ubuntu etc.)
-* [x] left-side ASCII art support
-  * [ ] distro logo for ASCII art
-* [ ] add package count support
-* [x] add used memory and used swap support
-* [ ] add option flags like path to config file or color disabling
-* [ ] NO\_COLOR support
