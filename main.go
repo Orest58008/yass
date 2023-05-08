@@ -148,88 +148,99 @@ func parseConfig(config []string, prependDistrocolor bool) []string {
 	config[i] = strings.Join(line, "")
     }
 
-    //parsing basic styling
+    //creating style maps styling
+    styleSheet := map[string]string{
+	//clear all styling and coloring
+	"<c>": "\x1B[0m",
+	"<>":  "\x1B[0m",
+	//text styling
+	"<b>":  "\x1B[1m",
+	"<d>":  "\x1B[2m",
+	"<i>":  "\x1B[3m",
+	"<u>":  "\x1B[4m",
+	"<uu>": "\x1B[21m",
+	"<r>":  "\x1B[7m",
+	"<s>":  "\x1B[9m",
+	//coloring
+	"<black>":   "\x1B[30m",
+	"<red>":     "\x1B[31m",
+	"<green>":   "\x1B[32m",
+	"<yellow>":  "\x1B[33m",
+	"<blue>":    "\x1B[34m",
+	"<magenta>": "\x1B[35m",
+	"<cyan>":    "\x1B[36m",
+	"<white>":   "\x1B[37m",
+	//bright coloring
+	"<brblack>":   "\x1B[30m;1m",
+	"<brred>":     "\x1B[31m;1m",
+	"<brgreen>":   "\x1B[32m;1m",
+	"<bryellow>":  "\x1B[33m;1m",
+	"<brblue>":    "\x1B[34m;1m",
+	"<brmagenta>": "\x1B[35m;1m",
+	"<brcyan>":    "\x1B[36m;1m",
+	"<brwhite>":   "\x1B[37m;1m",
+	//background coloring
+	"<bgblack>":   "\x1B[40m",
+	"<bgred>":     "\x1B[41m",
+	"<bggreen>":   "\x1B[42m",
+	"<bgyellow>":  "\x1B[43m",
+	"<bgblue>":    "\x1B[44m",
+	"<bgmagenta>": "\x1B[45m",
+	"<bgcyan>":    "\x1B[46m",
+	"<bgwhite>":   "\x1B[47m",
+	//bright background coloring
+	"<bgbrblack>":   "\x1B[40m;1m",
+	"<bgbrred>":     "\x1B[41m;1m",
+	"<bgbrgreen>":   "\x1B[42m;1m",
+	"<bgbryellow>":  "\x1B[43m;1m",
+	"<bgbrblue>":    "\x1B[44m;1m",
+	"<bgbrmagenta>": "\x1B[45m;1m",
+	"<bgbrcyan>":    "\x1B[46m;1m",
+	"<bgbrwhite>":   "\x1B[47m;1m",
+    }
+
+    distroColors := map[string]string{
+	//red
+	"centos": "\x1B[31m",
+	"debian": "\x1B[31m",
+	"rhel": "\x1B[31m",
+	"ubuntu": "\x1B[31m",
+	//green
+	"linux-mint": "\x1B[32m",
+	"manjaro": "\x1B[32m",
+	"opensuse-leap": "\x1B[32m",
+	"opensuse-tumbleweed": "\x1B[32m",
+	"void": "\x1B[32m",
+	//blue
+	"alpine": "\x1B[34m",
+	"fedora": "\x1B[34m",
+	"kali": "\x1B[34m",
+	"slackware": "\x1B[34m",
+	"scientific": "\x1B[34m",
+	//magenta
+	"endeavouros": "\x1B[35m",
+	"gentoo": "\x1B[35m",
+	//cyan
+	"arch": "\x1B[36m",
+	"clearlinux": "\x1B[36m",
+	"mageia": "\x1B[36m",
+    }
+
+    idLike := strings.Split(mainMap["ID_LIKE"], " ")[0]
+
+    //parsing styling
     for i := range config {
-	styleSheet := map[string]string{
-	    //clear all styling and coloring
-	    "<c>": "\x1B[0m",
-	    "<>":  "\x1B[0m",
-	    //text styling
-	    "<b>":  "\x1B[1m",
-	    "<d>":  "\x1B[2m",
-	    "<i>":  "\x1B[3m",
-	    "<u>":  "\x1B[4m",
-	    "<uu>": "\x1B[21m",
-	    "<r>":  "\x1B[7m",
-	    "<s>":  "\x1B[9m",
-	    //coloring
-	    "<black>":   "\x1B[30m",
-	    "<red>":     "\x1B[31m",
-	    "<green>":   "\x1B[32m",
-	    "<yellow>":  "\x1B[33m",
-	    "<blue>":    "\x1B[34m",
-	    "<magenta>": "\x1B[35m",
-	    "<cyan>":    "\x1B[36m",
-	    "<white>":   "\x1B[37m",
-	    //bright coloring
-	    "<brblack>":   "\x1B[30m;1m",
-	    "<brred>":     "\x1B[31m;1m",
-	    "<brgreen>":   "\x1B[32m;1m",
-	    "<bryellow>":  "\x1B[33m;1m",
-	    "<brblue>":    "\x1B[34m;1m",
-	    "<brmagenta>": "\x1B[35m;1m",
-	    "<brcyan>":    "\x1B[36m;1m",
-	    "<brwhite>":   "\x1B[37m;1m",
-	    //background coloring
-	    "<bgblack>":   "\x1B[40m",
-	    "<bgred>":     "\x1B[41m",
-	    "<bggreen>":   "\x1B[42m",
-	    "<bgyellow>":  "\x1B[43m",
-	    "<bgblue>":    "\x1B[44m",
-	    "<bgmagenta>": "\x1B[45m",
-	    "<bgcyan>":    "\x1B[46m",
-	    "<bgwhite>":   "\x1B[47m",
-	    //bright background coloring
-	    "<bgbrblack>":   "\x1B[40m;1m",
-	    "<bgbrred>":     "\x1B[41m;1m",
-	    "<bgbrgreen>":   "\x1B[42m;1m",
-	    "<bgbryellow>":  "\x1B[43m;1m",
-	    "<bgbrblue>":    "\x1B[44m;1m",
-	    "<bgbrmagenta>": "\x1B[45m;1m",
-	    "<bgbrcyan>":    "\x1B[46m;1m",
-	    "<bgbrwhite>":   "\x1B[47m;1m",
-	}
-	
 	for key, code := range styleSheet {
 	    config[i] = strings.ReplaceAll(config[i], key, code)
 	}
 
-	//distro color
-	idLike := strings.Split(mainMap["ID_LIKE"], " ")
-
-	if distroColor(mainMap["ID"]) != "" {
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", distroColor(mainMap["ID"]))
-	} else {
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", idLike[0])
+	if color, ok := distroColors[mainMap["ID"]]; ok {
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", color)
+	} else if colorLike, ok := distroColors[idLike]; ok {
+	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", colorLike)
 	}
+
     }
     
     return config
-}
-
-func distroColor(distroID string) string {
-    switch mainMap["ID"] {
-	case "centos", "debian", "rhel", "ubuntu":
-	    return "\x1B[31m"
-	case "linux-mint", "manjaro", "nixos", "opensuse-leap", "opensuse-tumbleweed", "void":
-	    return "\x1B[32m"
-	case "alpine", "fedora", "kali", "slackware", "scientific":
-	    return "\x1B[34m"
-	case "endeavouros", "gentoo":
-	    return "\x1B[35m"
-	case "arch", "clearlinux", "mageia":
-	    return "\x1B[36m"
-	default:
-	    return ""
-    }
 }
