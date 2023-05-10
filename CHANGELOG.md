@@ -12,8 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * NO\_COLOR support
 * Refactor README
 
-## [to be released]
-* MEMUSED and SWAPUSED support
+## [1.3.0]
+* Added command line options, including --help, --version and others
+* Added MEMUSED and SWAPUSED support
 
 ###  [1.2.1] - 2023-04-29
 * Added ID_LIKE support
