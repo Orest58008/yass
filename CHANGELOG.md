@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [to be added]
 * Automatic distribution logo detection in place of/alongside left-side ascii art
 * Package count support
-* Option flags like path to config file
 * NO\_COLOR support
 * Refactor README
 
