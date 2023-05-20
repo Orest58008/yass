@@ -129,7 +129,7 @@ func main() {
     if ascii == "opensuse-tumbleweed" || ascii == "opensuse-leap" { ascii = "suse" }
 
     //reading configs
-    var config = []string{"<distrocolor><d><b><u>$USER$<>@<distrocolor><d><b><u>$HOSTNAME$",
+    var config = []string{"<distrocolor><d><b><u>$USER$<clear>@<distrocolor><d><b><u>$HOSTNAME$",
 	      "<distrocolor><b>os<clear>     $PRETTY_NAME$",
 	      "<distrocolor><b>kernel<clear> $KERNEL_VERSION$",
 	      "<distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$ MiB",
