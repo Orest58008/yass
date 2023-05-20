@@ -3,21 +3,23 @@ package main
 import (
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	distros "codeberg.org/Orest58008/yass/distros"
 )
 
 //map to store values later outputted
 var mainMap map[string]string
-    
+
 func main() {
     mainMap = make(map[string]string)
     configPath := os.Getenv("HOME") + "/.config/yass/config"
-    artPath := os.Getenv("HOME") + "/.config/yass/art"
-    version := "1.3.0"
+    artPath := ""
+    ascii := ""
+    version := "1.4.0"
     dumpmap := false
 
     //read arguments
@@ -27,6 +29,9 @@ func main() {
 	    i++
 	    configPath = os.Args[i]
 	case "-a", "--ascii":
+	    i++
+	    ascii = os.Args[i]
+	case "-ap", "--asciipath":
 	    i++
 	    artPath = os.Args[i]
 	case "-d", "--dumpmap":
@@ -39,11 +44,13 @@ func main() {
 	    fmt.Println("")
 	    fmt.Println("\x1B[1mOptions:\x1B[0m")
 	    fmt.Println("  \x1B[1m-c, --config\x1B[0m /path/to/config:")
-	    fmt.Println("  \tUse custom config file.")
+	    fmt.Println("  \tSpecify path to config file.")
 	    fmt.Println("  \tDefault: $HOME/.config/yass/config")
-	    fmt.Println("  \x1B[1m-a, --ascii\x1B[0m /path/to/ascii:")
-	    fmt.Println("  \tUse custom ascii art file.")
-	    fmt.Println("  \tDefault: $HOME/.config/yass/art")
+	    fmt.Println("  \x1B[1m-a, --ascii\x1B[0m logo-name:")
+	    fmt.Println("  \tSpecify ascii logo.")
+	    fmt.Println("  \tDefault: your distro's ID from /etc/os-release")
+	    fmt.Println("  \x1B[1m-ap, --asciipath\x1B[0m /path/to/ascii:")
+	    fmt.Println("  \tSpecify path to custom ascii logo.")
 	    fmt.Println("  \x1B[1m-d, --dumpmap\x1B[0m:")
 	    fmt.Println("  \tPrint all the values yass has collected and can use.")
 	    fmt.Println("  \x1B[1m-V, --version\x1B[0m:")
@@ -116,14 +123,21 @@ func main() {
     //dumpmap behaviour
     if dumpmap { dumpMap() }
 
+    //updating ascii
+    if ascii == "" { ascii = mainMap["ID"] }
+    if _, ok := distros.Distros[ascii]; !ok { ascii = "linux" }
+    if ascii == "opensuse-tumbleweed" || ascii == "opensuse-leap" { ascii = "suse" }
+
     //reading configs
-    var config = []string{" <distrocolor><d><b><u>|USER|<>@<distrocolor><d><b><u>|HOSTNAME|",
-	      " <distrocolor><b>os<>     |PRETTY_NAME|",
-	      " <distrocolor><b>kernel<> |KERNEL_VERSION|",
-	      " <distrocolor><b>memory<> |MEMFREE_MB| / |MEMTOTAL_MB| MiB",
-	      " <distrocolor><b>swap<>   |SWAPFREE_MB| / |SWAPTOTAL_MB| MiB",
-	      " <distrocolor><b>uptime<> |UPTIME_HRS|:|UPTIME_MINS|:|UPTIME_SECS|", ""}
-    var art = []string{"<b>\\   ", "<b>\\\\  ", "<b> \\\\ ", "<b>  \\\\", "<b>  //", "<b> // ", "<b>//  ", "<b>/   ", ""}
+    var config = []string{"<distrocolor><d><b><u>$USER$<>@<distrocolor><d><b><u>$HOSTNAME$",
+	      "<distrocolor><b>os<clear>     $PRETTY_NAME$",
+	      "<distrocolor><b>kernel<clear> $KERNEL_VERSION$",
+	      "<distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$ MiB",
+	      "<distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$ MiB",
+	      "<distrocolor><b>uptime<clear> $UPTIME_HRS$:$UPTIME_MINS$:$UPTIME_SECS$",""}
+    var art = distros.Distros[ascii]
+    var artWidth = len(art[1]) - 2
+    var artSpacer = strings.Repeat(" ", artWidth)
 
     if _, err := os.Stat(configPath); !os.IsNotExist(err) {
         config = read(configPath)
@@ -132,27 +146,25 @@ func main() {
     if _, err := os.Stat(artPath); !os.IsNotExist(err) {
         art = read(artPath)
     }
-    config = parseConfig(config, false)
-    art = parseConfig(art, true)
+
+    config = parseConfig(config, art[0])
+    art = parseConfig(art, art[0])
 
     //printing results
-    artSize := len(art) - 1
-    configSize := len(config) - 1
-    sizeDifference := math.Abs(float64(artSize - configSize) / 2)
-    if artSize > configSize {
-	for i := 0; i < artSize; i++ {
-	    if i >= int(math.Floor(sizeDifference)) && i <= configSize + int(math.Floor(sizeDifference)) {
-                fmt.Println(art[i], config[i - int(math.Floor(sizeDifference))])
-	    } else {
-		fmt.Println(art[i])
+    if len(config) > len(art) {
+	for i := range config {
+	    if i < len(art) && i > 0 {
+		fmt.Println("  \x1B[1m" + art[i] + "  " + config[i - 1])
+	    } else if i > 0 {
+		fmt.Println("\x1B[1m" + artSpacer + config[i - 1])
 	    }
 	}
     } else {
-	for i := 0; i < configSize; i++ {
-	    if i >= int(math.Floor(sizeDifference)) && i <= artSize + int(math.Floor(sizeDifference)) {
-                fmt.Println(art[i - int(math.Floor(sizeDifference))], config[i])
+	for i := range art {
+	    if i < len(config) && i > 0 {
+		fmt.Println("  \x1B[1m" + art[i] + "  " + config[i - 1])
 	    } else {
-		fmt.Println(config[i])
+		fmt.Println("  \x1B[1m" + art[i])
 	    }
 	}
     }
@@ -216,24 +228,22 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
     }
 }
 
-func parseConfig(config []string, prependDistrocolor bool) []string {
+func parseConfig(config []string, distroColor string) []string {
     //parsing values
     for i := range config {
-	line := strings.Split(config[i], "|")
+	line := strings.Split(config[i], "$")
 	for j := range line {
 	    val, ok := mainMap[line[j]]
 	    if ok { line[j] = val }
 	}
-	line = append(line, "<>")
-	if prependDistrocolor { line = append([]string{"<distrocolor>"}, line...) }
+	line = append(line, "<clear>")
 	config[i] = strings.Join(line, "")
     }
 
     //creating style maps styling
     styleSheet := map[string]string{
 	//clear all styling and coloring
-	"<c>": "\x1B[0m",
-	"<>":  "\x1B[0m",
+	"<clear>": "\x1B[0m",
 	//text styling
 	"<b>":  "\x1B[1m",
 	"<d>":  "\x1B[2m",
@@ -280,47 +290,13 @@ func parseConfig(config []string, prependDistrocolor bool) []string {
 	"<bgbrwhite>":   "\x1B[47m;1m",
     }
 
-    distroColors := map[string]string{
-	//red
-	"centos": "\x1B[31m",
-	"debian": "\x1B[31m",
-	"rhel": "\x1B[31m",
-	"ubuntu": "\x1B[31m",
-	//green
-	"linux-mint": "\x1B[32m",
-	"manjaro": "\x1B[32m",
-	"opensuse-leap": "\x1B[32m",
-	"opensuse-tumbleweed": "\x1B[32m",
-	"void": "\x1B[32m",
-	//blue
-	"alpine": "\x1B[34m",
-	"fedora": "\x1B[34m",
-	"kali": "\x1B[34m",
-	"slackware": "\x1B[34m",
-	"scientific": "\x1B[34m",
-	//magenta
-	"endeavouros": "\x1B[35m",
-	"gentoo": "\x1B[35m",
-	//cyan
-	"arch": "\x1B[36m",
-	"clearlinux": "\x1B[36m",
-	"mageia": "\x1B[36m",
-    }
-
-    idLike := strings.Split(mainMap["ID_LIKE"], " ")[0]
-
     //parsing styling
     for i := range config {
+	config[i] = strings.ReplaceAll(config[i], "<distrocolor>", distroColor)
+
 	for key, code := range styleSheet {
 	    config[i] = strings.ReplaceAll(config[i], key, code)
 	}
-
-	if color, ok := distroColors[mainMap["ID"]]; ok {
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", color)
-	} else if colorLike, ok := distroColors[idLike]; ok {
-	    config[i] = strings.ReplaceAll(config[i], "<distrocolor>", colorLike)
-	}
-
     }
     
     return config
