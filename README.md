@@ -14,7 +14,7 @@
 * `<uu>` for double underline
 * `<s>` for strikethrough
 * `<r>` for reversed colors
-* `<c>` or `<>` to clear all styling including color
+* `<clear>` to clear all styling including color
 ### Colors
 * `<color>` for color
   * supported colors: black, red, green, yellow, blue, magenta, cyan and white
@@ -23,7 +23,7 @@
 * `<bgbrcolor>` for bright version of background color
 * `<distrocolor>` for your Linux distro's color
 ### Using variables from envvars, os-release, meminfo etc.
-* `|VARIABLE_NAME|` will be replaced with variable's value
+* `$VARIABLE_NAME$` will be replaced with variable's value
   * names are the same as in source(e.g. `MEMREE` for free memory); hostname is `HOSTNAME`, kernel version is `KERNEL_VERSION`
   * the name should be in ALL CAPS
   * by default, meminfo values are in kB, for values in MiB and GiB use `VARIABLE_MB` and `VARIABLE_GB`
