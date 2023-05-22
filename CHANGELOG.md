@@ -11,12 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Current time support
 * Plugin system
 * Refactor README
-* Fix some logos' spacing
+
+### [1.4.1]
+* Fixed spacing issues
+* Fixed `<>` leftovers
 
 ## [1.4.0]
 * Added pfetch-like distro logo detection
 * Changed variable denoters from `|` to `$`
-* Removed ID\_LIKE support, instead default Linux logo/color is used for fallback
+* Removed ID\_LIKE support, instead defaulting to Linux logo
 
 ## [1.3.0]
 * Added command line options, including --help, --version and others
