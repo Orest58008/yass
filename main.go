@@ -136,7 +136,8 @@ func main() {
 	      "<distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$ MiB",
 	      "<distrocolor><b>uptime<clear> $UPTIME_HRS$:$UPTIME_MINS$:$UPTIME_SECS$",""}
     var art = distros.Distros[ascii]
-    var artWidth = len(art[1]) - 2
+    var artPurged = purgeConfig(art)
+    var artWidth = len(artPurged[len(artPurged) - 1])
     var artSpacer = strings.Repeat(" ", artWidth)
 
     if _, err := os.Stat(configPath); !os.IsNotExist(err) {
@@ -150,21 +151,24 @@ func main() {
     config = parseConfig(config, art[0])
     art = parseConfig(art, art[0])
 
+
     //printing results
     if len(config) > len(art) {
-	for i := range config {
-	    if i < len(art) && i > 0 {
-		fmt.Println("  \x1B[1m" + art[i] + "  " + config[i - 1])
-	    } else if i > 0 {
-		fmt.Println("\x1B[1m" + artSpacer + config[i - 1])
+	for i := 0; i < len(config) + 2; i++ {
+	    if i < len(art) && i > 1 {
+		fmt.Println(" \x1B[1m" + art[i] + " " + config[i - 2])
+	    } else if i > 1 {
+		fmt.Println(artSpacer + "  " + config[i - 2])
+	    } else if i < len(art) {
+		fmt.Println(" \x1B[1m" + art[i])
 	    }
 	}
     } else {
 	for i := range art {
-	    if i < len(config) && i > 0 {
-		fmt.Println("  \x1B[1m" + art[i] + "  " + config[i - 1])
+	    if i < len(config) + 1 && i > 1 {
+		fmt.Println(" \x1B[1m" + art[i] + " " + config[i - 2])
 	    } else {
-		fmt.Println("  \x1B[1m" + art[i])
+		fmt.Println(" \x1B[1m" + art[i])
 	    }
 	}
     }
@@ -229,15 +233,19 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
 }
 
 func parseConfig(config []string, distroColor string) []string {
+    //result holder to not mess up the original config
+    result := make([]string, len(config))
+    copy(result, config)
+
     //parsing values
-    for i := range config {
-	line := strings.Split(config[i], "$")
+    for i := range result {
+	line := strings.Split(result[i], "$")
 	for j := range line {
 	    val, ok := mainMap[line[j]]
 	    if ok { line[j] = val }
 	}
 	line = append(line, "<clear>")
-	config[i] = strings.Join(line, "")
+	result[i] = strings.Join(line, "")
     }
 
     //creating style maps styling
@@ -291,13 +299,80 @@ func parseConfig(config []string, distroColor string) []string {
     }
 
     //parsing styling
-    for i := range config {
-	config[i] = strings.ReplaceAll(config[i], "<distrocolor>", distroColor)
+    for i := range result {
+	result[i] = strings.ReplaceAll(result[i], "<distrocolor>", distroColor)
 
 	for key, code := range styleSheet {
-	    config[i] = strings.ReplaceAll(config[i], key, code)
+	    result[i] = strings.ReplaceAll(result[i], key, code)
 	}
     }
     
-    return config
+    return result
+}
+
+func purgeConfig(config []string) []string {
+    //result holder to not mess up the original config
+    result := make([]string, len(config))
+    copy(result, config)
+
+    //creating style maps styling
+    styleSheet := map[string]string{
+	//clear all styling and coloring
+	"<clear>": "\x1B[0m",
+	//text styling
+	"<b>":  "\x1B[1m",
+	"<d>":  "\x1B[2m",
+	"<i>":  "\x1B[3m",
+	"<u>":  "\x1B[4m",
+	"<uu>": "\x1B[21m",
+	"<r>":  "\x1B[7m",
+	"<s>":  "\x1B[9m",
+	//coloring
+	"<black>":   "\x1B[30m",
+	"<red>":     "\x1B[31m",
+	"<green>":   "\x1B[32m",
+	"<yellow>":  "\x1B[33m",
+	"<blue>":    "\x1B[34m",
+	"<magenta>": "\x1B[35m",
+	"<cyan>":    "\x1B[36m",
+	"<white>":   "\x1B[37m",
+	//bright coloring
+	"<brblack>":   "\x1B[30m;1m",
+	"<brred>":     "\x1B[31m;1m",
+	"<brgreen>":   "\x1B[32m;1m",
+	"<bryellow>":  "\x1B[33m;1m",
+	"<brblue>":    "\x1B[34m;1m",
+	"<brmagenta>": "\x1B[35m;1m",
+	"<brcyan>":    "\x1B[36m;1m",
+	"<brwhite>":   "\x1B[37m;1m",
+	//background coloring
+	"<bgblack>":   "\x1B[40m",
+	"<bgred>":     "\x1B[41m",
+	"<bggreen>":   "\x1B[42m",
+	"<bgyellow>":  "\x1B[43m",
+	"<bgblue>":    "\x1B[44m",
+	"<bgmagenta>": "\x1B[45m",
+	"<bgcyan>":    "\x1B[46m",
+	"<bgwhite>":   "\x1B[47m",
+	//bright background coloring
+	"<bgbrblack>":   "\x1B[40m;1m",
+	"<bgbrred>":     "\x1B[41m;1m",
+	"<bgbrgreen>":   "\x1B[42m;1m",
+	"<bgbryellow>":  "\x1B[43m;1m",
+	"<bgbrblue>":    "\x1B[44m;1m",
+	"<bgbrmagenta>": "\x1B[45m;1m",
+	"<bgbrcyan>":    "\x1B[46m;1m",
+	"<bgbrwhite>":   "\x1B[47m;1m",
+    }
+
+    //parsing styling
+    for i := range result {
+	result[i] = strings.ReplaceAll(result[i], "<distrocolor>", "")
+
+	for key := range styleSheet {
+	    result[i] = strings.ReplaceAll(result[i], key, "")
+	}
+    }
+    
+    return result
 }

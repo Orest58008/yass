@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [to be added]
 * Package count support
 * NO\_COLOR support
+* Current time support
+* Plugin system
 * Refactor README
+* Fix some logos' spacing
 
 ## [1.4.0]
 * Added pfetch-like distro logo detection
