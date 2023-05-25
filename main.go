@@ -216,7 +216,7 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
     for i := range array {
 	key, value, _ := strings.Cut(array[i], splitter)
 	value = strings.TrimSpace(value)
-	if strings.Contains(value, "kB") {
+	if strings.Contains(value, " kB") {
             value = strings.ReplaceAll(value, " kB", "")
 	    valueNum, err := strconv.Atoi(value)
 	    if err != nil {
