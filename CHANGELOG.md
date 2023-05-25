@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Plugin system
 * Refactor README
 
+### [1.4.2]
+* Fixed strconv issue, sometimes occuring in kitty due to incorrect memory variable detection
+
 ### [1.4.1]
 * Fixed spacing issues
 * Fixed `<>` leftovers
