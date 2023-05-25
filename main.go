@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"sort"
-	"strconv"
-	"strings"
+    "fmt"
+    "log"
+    "os"
+    "sort"
+    "strconv"
+    "strings"
 
-	distros "codeberg.org/Orest58008/yass/distros"
+    distros "codeberg.org/Orest58008/yass/distros"
 )
 
 //map to store values later outputted
@@ -119,7 +119,7 @@ func main() {
     mainMap["UPTIME_HRS"] = strconv.Itoa(uptimeHrs)
     mainMap["UPTIME_MINS"] = strconv.Itoa(uptimeMins)
     mainMap["UPTIME_SECS"] = strconv.Itoa(uptimeSecs)
-    
+
     //dumpmap behaviour
     if dumpmap { dumpMap() }
 
@@ -130,22 +130,22 @@ func main() {
 
     //reading configs
     var config = []string{"<distrocolor><d><b><u>$USER$<clear>@<distrocolor><d><b><u>$HOSTNAME$",
-	      "<distrocolor><b>os<clear>     $PRETTY_NAME$",
-	      "<distrocolor><b>kernel<clear> $KERNEL_VERSION$",
-	      "<distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$ MiB",
-	      "<distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$ MiB",
-	      "<distrocolor><b>uptime<clear> $UPTIME_HRS$:$UPTIME_MINS$:$UPTIME_SECS$",""}
+    "<distrocolor><b>os<clear>     $PRETTY_NAME$",
+    "<distrocolor><b>kernel<clear> $KERNEL_VERSION$",
+    "<distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$ MiB",
+    "<distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$ MiB",
+    "<distrocolor><b>uptime<clear> $UPTIME_HRS$:$UPTIME_MINS$:$UPTIME_SECS$",""}
     var art = distros.Distros[ascii]
     var artPurged = purgeConfig(art)
     var artWidth = len(artPurged[len(artPurged) - 1])
     var artSpacer = strings.Repeat(" ", artWidth)
 
     if _, err := os.Stat(configPath); !os.IsNotExist(err) {
-        config = read(configPath)
+	config = read(configPath)
     }
 
     if _, err := os.Stat(artPath); !os.IsNotExist(err) {
-        art = read(artPath)
+	art = read(artPath)
     }
 
     config = parseConfig(config, art[0])
@@ -217,7 +217,7 @@ func appendArray(array []string, destinationMap map[string]string, splitter stri
 	key, value, _ := strings.Cut(array[i], splitter)
 	value = strings.TrimSpace(value)
 	if strings.Contains(value, " kB") {
-            value = strings.ReplaceAll(value, " kB", "")
+	    value = strings.ReplaceAll(value, " kB", "")
 	    valueNum, err := strconv.Atoi(value)
 	    if err != nil {
 		fmt.Println("Error conveting " + key + " to int:")
@@ -306,7 +306,7 @@ func parseConfig(config []string, distroColor string) []string {
 	    result[i] = strings.ReplaceAll(result[i], key, code)
 	}
     }
-    
+
     return result
 }
 
@@ -373,6 +373,6 @@ func purgeConfig(config []string) []string {
 	    result[i] = strings.ReplaceAll(result[i], key, "")
 	}
     }
-    
+
     return result
 }
