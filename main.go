@@ -4,6 +4,7 @@ import (
     "fmt"
     "log"
     "os"
+    "os/exec"
     "sort"
     "strconv"
     "strings"
@@ -119,6 +120,28 @@ func main() {
     mainMap["UPTIME_HRS"] = strconv.Itoa(uptimeHrs)
     mainMap["UPTIME_MINS"] = strconv.Itoa(uptimeMins)
     mainMap["UPTIME_SECS"] = strconv.Itoa(uptimeSecs)
+    
+    //reading package counts
+    packageManagers := map[string][]string{
+	"apk":		{"info",},
+	"dnf":		{"list", "installed",},
+	"dpkg":		{"-l",},
+	"equery":	{"list", "\"*\"",},
+	"guix":		{"package", "--list-installed",},
+	"pacman":	{"-Q",},
+	"pkginfo":	{"-i",},
+	"rpm":		{"-qa",},
+	"xbps-query":	{"-l",},
+	"yum":		{"list", "installed",},
+    }
+
+    for pm, pmargs := range packageManagers {
+	out, err := exec.Command(pm, pmargs...).Output()
+	if err == nil {
+	    count := strings.Count(string(out), "\n")
+	    mainMap[strings.ToUpper(pm)] = strconv.Itoa(count)
+	}
+    }
 
     //dumpmap behaviour
     if dumpmap { dumpMap() }
@@ -174,27 +197,26 @@ func main() {
     }
 }
 
-func dumpMap() {
-    keys := make([]string, 0, len(mainMap))
-    for k := range mainMap {
-	keys = append(keys, k)
-    }
-    sort.Strings(keys)
-    for _, k := range keys {
-	fmt.Println(k, mainMap[k])
-    }
-    os.Exit(0)
-}
 
-func read(path string) []string {
-    resultStr, err := os.ReadFile(path)
-    if err != nil {
-	fmt.Println("Error while reading " + path + ":")
-	log.Fatal(err)
-    }
-    result := strings.Split(string(resultStr), "\n")
 
-    return result
+func appendArray(array []string, target map[string]string, splitter string) {
+    for i := range array {
+	key, value, _ := strings.Cut(array[i], splitter)
+	value = strings.TrimSpace(value)
+	if strings.Contains(value, " kB") {
+	    value = strings.ReplaceAll(value, " kB", "")
+	    valueNum, err := strconv.Atoi(value)
+	    if err != nil {
+		fmt.Println("Error conveting " + key + " to int:")
+		log.Fatal(err)
+	    }
+	    valueMb := valueNum / 1024
+	    valueGb := valueMb / 1024
+	    target[strings.ToUpper(strings.TrimSpace(key))+"_MB"] = strconv.Itoa(valueMb)
+	    target[strings.ToUpper(strings.TrimSpace(key))+"_GB"] = strconv.Itoa(valueGb)
+	}
+	target[strings.ToUpper(strings.TrimSpace(key))] = value
+    }
 }
 
 func calculateUsedMemory(freeKey string, totalKey string, resultKey string) {
@@ -212,24 +234,16 @@ func calculateUsedMemory(freeKey string, totalKey string, resultKey string) {
     mainMap[resultKey] = strconv.Itoa(memused)
 }
 
-func appendArray(array []string, destinationMap map[string]string, splitter string) {
-    for i := range array {
-	key, value, _ := strings.Cut(array[i], splitter)
-	value = strings.TrimSpace(value)
-	if strings.Contains(value, " kB") {
-	    value = strings.ReplaceAll(value, " kB", "")
-	    valueNum, err := strconv.Atoi(value)
-	    if err != nil {
-		fmt.Println("Error conveting " + key + " to int:")
-		log.Fatal(err)
-	    }
-	    valueMb := valueNum / 1024
-	    valueGb := valueMb / 1024
-	    destinationMap[strings.ToUpper(strings.TrimSpace(key))+"_MB"] = strconv.Itoa(valueMb)
-	    destinationMap[strings.ToUpper(strings.TrimSpace(key))+"_GB"] = strconv.Itoa(valueGb)
-	}
-	destinationMap[strings.ToUpper(strings.TrimSpace(key))] = value
+func dumpMap() {
+    keys := make([]string, 0, len(mainMap))
+    for k := range mainMap {
+	keys = append(keys, k)
     }
+    sort.Strings(keys)
+    for _, k := range keys {
+	fmt.Println(k, mainMap[k])
+    }
+    os.Exit(0)
 }
 
 func parseConfig(config []string, distroColor string) []string {
@@ -248,54 +262,54 @@ func parseConfig(config []string, distroColor string) []string {
 	result[i] = strings.Join(line, "")
     }
 
-    //creating style maps styling
+    //creating styling map
     styleSheet := map[string]string{
 	//clear all styling and coloring
-	"<clear>": "\x1B[0m",
+	"<clear>":	"\x1B[0m",
 	//text styling
-	"<b>":  "\x1B[1m",
-	"<d>":  "\x1B[2m",
-	"<i>":  "\x1B[3m",
-	"<u>":  "\x1B[4m",
-	"<uu>": "\x1B[21m",
-	"<r>":  "\x1B[7m",
-	"<s>":  "\x1B[9m",
+	"<b>":		"\x1B[1m",
+	"<d>":		"\x1B[2m",
+	"<i>":		"\x1B[3m",
+	"<u>":		"\x1B[4m",
+	"<uu>":		"\x1B[21m",
+	"<r>":		"\x1B[7m",
+	"<s>":		"\x1B[9m",
 	//coloring
-	"<black>":   "\x1B[30m",
-	"<red>":     "\x1B[31m",
-	"<green>":   "\x1B[32m",
-	"<yellow>":  "\x1B[33m",
-	"<blue>":    "\x1B[34m",
-	"<magenta>": "\x1B[35m",
-	"<cyan>":    "\x1B[36m",
-	"<white>":   "\x1B[37m",
+	"<black>":	"\x1B[30m",
+	"<red>":	"\x1B[31m",
+	"<green>":	"\x1B[32m",
+	"<yellow>":	"\x1B[33m",
+	"<blue>":	"\x1B[34m",
+	"<magenta>":	"\x1B[35m",
+	"<cyan>":	"\x1B[36m",
+	"<white>":	"\x1B[37m",
 	//bright coloring
-	"<brblack>":   "\x1B[30m;1m",
-	"<brred>":     "\x1B[31m;1m",
-	"<brgreen>":   "\x1B[32m;1m",
-	"<bryellow>":  "\x1B[33m;1m",
-	"<brblue>":    "\x1B[34m;1m",
-	"<brmagenta>": "\x1B[35m;1m",
-	"<brcyan>":    "\x1B[36m;1m",
-	"<brwhite>":   "\x1B[37m;1m",
+	"<brblack>":	"\x1B[30m;1m",
+	"<brred>":	"\x1B[31m;1m",
+	"<brgreen>":	"\x1B[32m;1m",
+	"<bryellow>":	"\x1B[33m;1m",
+	"<brblue>":	"\x1B[34m;1m",
+	"<brmagenta>":	"\x1B[35m;1m",
+	"<brcyan>":	"\x1B[36m;1m",
+	"<brwhite>":	"\x1B[37m;1m",
 	//background coloring
-	"<bgblack>":   "\x1B[40m",
-	"<bgred>":     "\x1B[41m",
-	"<bggreen>":   "\x1B[42m",
-	"<bgyellow>":  "\x1B[43m",
-	"<bgblue>":    "\x1B[44m",
-	"<bgmagenta>": "\x1B[45m",
-	"<bgcyan>":    "\x1B[46m",
-	"<bgwhite>":   "\x1B[47m",
+	"<bgblack>":	"\x1B[40m",
+	"<bgred>":	"\x1B[41m",
+	"<bggreen>":	"\x1B[42m",
+	"<bgyellow>":	"\x1B[43m",
+	"<bgblue>":	"\x1B[44m",
+	"<bgmagenta>":	"\x1B[45m",
+	"<bgcyan>":	"\x1B[46m",
+	"<bgwhite>":	"\x1B[47m",
 	//bright background coloring
-	"<bgbrblack>":   "\x1B[40m;1m",
-	"<bgbrred>":     "\x1B[41m;1m",
-	"<bgbrgreen>":   "\x1B[42m;1m",
-	"<bgbryellow>":  "\x1B[43m;1m",
-	"<bgbrblue>":    "\x1B[44m;1m",
-	"<bgbrmagenta>": "\x1B[45m;1m",
-	"<bgbrcyan>":    "\x1B[46m;1m",
-	"<bgbrwhite>":   "\x1B[47m;1m",
+	"<bgbrblack>":	"\x1B[40m;1m",
+	"<bgbrred>":	"\x1B[41m;1m",
+	"<bgbrgreen>":	"\x1B[42m;1m",
+	"<bgbryellow>":	"\x1B[43m;1m",
+	"<bgbrblue>":	"\x1B[44m;1m",
+	"<bgbrmagenta>":"\x1B[45m;1m",
+	"<bgbrcyan>":	"\x1B[46m;1m",
+	"<bgbrwhite>":	"\x1B[47m;1m",
     }
 
     //parsing styling
@@ -315,54 +329,54 @@ func purgeConfig(config []string) []string {
     result := make([]string, len(config))
     copy(result, config)
 
-    //creating style maps styling
+    //creating styling map
     styleSheet := map[string]string{
 	//clear all styling and coloring
-	"<clear>": "\x1B[0m",
+	"<clear>":	"\x1B[0m",
 	//text styling
-	"<b>":  "\x1B[1m",
-	"<d>":  "\x1B[2m",
-	"<i>":  "\x1B[3m",
-	"<u>":  "\x1B[4m",
-	"<uu>": "\x1B[21m",
-	"<r>":  "\x1B[7m",
-	"<s>":  "\x1B[9m",
+	"<b>":		"\x1B[1m",
+	"<d>":		"\x1B[2m",
+	"<i>":		"\x1B[3m",
+	"<u>":		"\x1B[4m",
+	"<uu>":		"\x1B[21m",
+	"<r>":		"\x1B[7m",
+	"<s>":		"\x1B[9m",
 	//coloring
-	"<black>":   "\x1B[30m",
-	"<red>":     "\x1B[31m",
-	"<green>":   "\x1B[32m",
-	"<yellow>":  "\x1B[33m",
-	"<blue>":    "\x1B[34m",
-	"<magenta>": "\x1B[35m",
-	"<cyan>":    "\x1B[36m",
-	"<white>":   "\x1B[37m",
+	"<black>":	"\x1B[30m",
+	"<red>":	"\x1B[31m",
+	"<green>":	"\x1B[32m",
+	"<yellow>":	"\x1B[33m",
+	"<blue>":	"\x1B[34m",
+	"<magenta>":	"\x1B[35m",
+	"<cyan>":	"\x1B[36m",
+	"<white>":	"\x1B[37m",
 	//bright coloring
-	"<brblack>":   "\x1B[30m;1m",
-	"<brred>":     "\x1B[31m;1m",
-	"<brgreen>":   "\x1B[32m;1m",
-	"<bryellow>":  "\x1B[33m;1m",
-	"<brblue>":    "\x1B[34m;1m",
-	"<brmagenta>": "\x1B[35m;1m",
-	"<brcyan>":    "\x1B[36m;1m",
-	"<brwhite>":   "\x1B[37m;1m",
+	"<brblack>":	"\x1B[30m;1m",
+	"<brred>":	"\x1B[31m;1m",
+	"<brgreen>":	"\x1B[32m;1m",
+	"<bryellow>":	"\x1B[33m;1m",
+	"<brblue>":	"\x1B[34m;1m",
+	"<brmagenta>":	"\x1B[35m;1m",
+	"<brcyan>":	"\x1B[36m;1m",
+	"<brwhite>":	"\x1B[37m;1m",
 	//background coloring
-	"<bgblack>":   "\x1B[40m",
-	"<bgred>":     "\x1B[41m",
-	"<bggreen>":   "\x1B[42m",
-	"<bgyellow>":  "\x1B[43m",
-	"<bgblue>":    "\x1B[44m",
-	"<bgmagenta>": "\x1B[45m",
-	"<bgcyan>":    "\x1B[46m",
-	"<bgwhite>":   "\x1B[47m",
+	"<bgblack>":	"\x1B[40m",
+	"<bgred>":	"\x1B[41m",
+	"<bggreen>":	"\x1B[42m",
+	"<bgyellow>":	"\x1B[43m",
+	"<bgblue>":	"\x1B[44m",
+	"<bgmagenta>":	"\x1B[45m",
+	"<bgcyan>":	"\x1B[46m",
+	"<bgwhite>":	"\x1B[47m",
 	//bright background coloring
-	"<bgbrblack>":   "\x1B[40m;1m",
-	"<bgbrred>":     "\x1B[41m;1m",
-	"<bgbrgreen>":   "\x1B[42m;1m",
-	"<bgbryellow>":  "\x1B[43m;1m",
-	"<bgbrblue>":    "\x1B[44m;1m",
-	"<bgbrmagenta>": "\x1B[45m;1m",
-	"<bgbrcyan>":    "\x1B[46m;1m",
-	"<bgbrwhite>":   "\x1B[47m;1m",
+	"<bgbrblack>":	"\x1B[40m;1m",
+	"<bgbrred>":	"\x1B[41m;1m",
+	"<bgbrgreen>":	"\x1B[42m;1m",
+	"<bgbryellow>":	"\x1B[43m;1m",
+	"<bgbrblue>":	"\x1B[44m;1m",
+	"<bgbrmagenta>":"\x1B[45m;1m",
+	"<bgbrcyan>":	"\x1B[46m;1m",
+	"<bgbrwhite>":	"\x1B[47m;1m",
     }
 
     //parsing styling
@@ -373,6 +387,17 @@ func purgeConfig(config []string) []string {
 	    result[i] = strings.ReplaceAll(result[i], key, "")
 	}
     }
+
+    return result
+}
+
+func read(path string) []string {
+    resultStr, err := os.ReadFile(path)
+    if err != nil {
+	fmt.Println("Error while reading " + path + ":")
+	log.Fatal(err)
+    }
+    result := strings.Split(string(resultStr), "\n")
 
     return result
 }

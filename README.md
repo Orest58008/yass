@@ -28,3 +28,4 @@
   * the name should be in ALL CAPS
   * by default, meminfo values are in kB, for values in MiB and GiB use `VARIABLE_MB` and `VARIABLE_GB`
   * uptime in seconds, minutes and hours is `UPTIME_SECS`, `UPTIME_MINS`, `UPTIME_HRS`
+  * package count is `PACKAGEMANAGER`
