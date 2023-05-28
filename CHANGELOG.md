@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [to be added]
 * Option to list supported package managers
+* Automatic main package manager detection
 * NO\_COLOR support
 * Current time support
 * Plugin system

@@ -178,18 +178,18 @@ func main() {
     //printing results
     if len(config) > len(art) {
 	for i := 0; i < len(config) + 2; i++ {
-	    if i < len(art) && i > 1 {
-		fmt.Println(" \x1B[1m" + art[i] + " " + config[i - 2])
-	    } else if i > 1 {
-		fmt.Println(artSpacer + "  " + config[i - 2])
+	    if i < len(art) && i > 0 {
+		fmt.Println(" \x1B[1m" + art[i] + " " + config[i - 1])
+	    } else if i > 0 {
+		fmt.Println(artSpacer + "  " + config[i - 1])
 	    } else if i < len(art) {
 		fmt.Println(" \x1B[1m" + art[i])
 	    }
 	}
     } else {
 	for i := range art {
-	    if i < len(config) + 1 && i > 1 {
-		fmt.Println(" \x1B[1m" + art[i] + " " + config[i - 2])
+	    if i < len(config) + 1 && i > 0 {
+		fmt.Println(" \x1B[1m" + art[i] + " " + config[i - 1])
 	    } else {
 		fmt.Println(" \x1B[1m" + art[i])
 	    }
