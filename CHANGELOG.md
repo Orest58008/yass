@@ -6,8 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [to be added]
-* Option to list supported package managers
-* Automatic main package manager detection
+* Main package manager detection
 * NO\_COLOR support
 * Current time support
 * Plugin system
@@ -16,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0]
 * Added package count support
   * Currently supported package managers: apk, dnf, dpkg, equery(emerge), guix, pacman, pkginfo(pkgutils), rpm, xbps-query(xbps), yum
+* Fixed vertical spacing issues
 
 ### [1.4.2]
 * Fixed strconv issue, sometimes occuring in kitty due to incorrect memory variable detection
