@@ -12,8 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Plugin system
 * Refactor README
 
-## [1.5.1]
+## [1.6.0]
 * Added main package manager detection
+* Added motherboard model support
+* Added palette support
 * Moved environment variable detection to the bottom so you can replace arbitrary values at the runtime
 * Updated examples
 
