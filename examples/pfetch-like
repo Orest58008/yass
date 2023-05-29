@@ -1,7 +1,7 @@
- <distrocolor><d><b><u>$USER$<clear>@<distrocolor><d><b><u>$HOSTNAME$
+ <distrocolor><d><b>$USER$<clear>@<distrocolor><d><b>$HOSTNAME$
  <distrocolor><b>os<clear>     $PRETTY_NAME$
+ <distrocolor><b>host<clear>   $MODEL$
  <distrocolor><b>kernel<clear> $KERNEL_VERSION$
  <distrocolor><b>uptime<clear> $UPTIME_HRS$h $UPTIME_MINS$m
  <distrocolor><b>pkgs<clear>   $PM_COUNT$
- <distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$M
- <distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$M
+ <distrocolor><b>memory<clear> $MEMFREE_MB$M / $MEMTOTAL_MB$M

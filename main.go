@@ -86,7 +86,17 @@ func main() {
 	fmt.Println("Error while reading /etc/hostname:")
 	log.Fatal(err) 
     }
-    mainMap["HOSTNAME"] = strings.TrimSpace(string(hostname)) 
+    mainMap["HOSTNAME"] = strings.TrimSpace(string(hostname))
+
+    //reading model
+    model := ""
+    modelName, err := os.ReadFile("/sys/devices/virtual/dmi/id/product_name")
+    model += strings.TrimSpace(string(modelName))
+    modelVersion, err := os.ReadFile("/sys/devices/virtual/dmi/id/product_version")
+    model += " " + strings.TrimSpace(string(modelVersion))
+    modelModel, err := os.ReadFile("/sys/firmware/devicetree/base/model")
+    model += " " + strings.TrimSpace(string(modelModel))
+    mainMap["MODEL"] = model
 
     //reading kernel version
     kernelVersion, err := os.ReadFile("/proc/sys/kernel/osrelease")
@@ -144,7 +154,12 @@ func main() {
 	}
     }
 
+    //palette
+    mainMap["PALETTE"] = "\x1B[40m  \x1B[41m  \x1B[42m  \x1B[43m  \x1B[44m  \x1B[45m  \x1B[46m  \x1B[47m  \x1B[0m"
+    mainMap["BRPALETTE"] = "\x1B[100m  \x1B[101m  \x1B[102m  \x1B[103m  \x1B[104m  \x1B[105m  \x1B[106m  \x1B[107m  \x1B[0m"
+
     //environment variables
+    //this MUST be after all other reads
     envVars := os.Environ()
     appendArray(envVars, mainMap, "=")
 
@@ -289,14 +304,14 @@ func parseConfig(config []string, distroColor string) []string {
 	"<cyan>":	"\x1B[36m",
 	"<white>":	"\x1B[37m",
 	//bright coloring
-	"<brblack>":	"\x1B[30m;1m",
-	"<brred>":	"\x1B[31m;1m",
-	"<brgreen>":	"\x1B[32m;1m",
-	"<bryellow>":	"\x1B[33m;1m",
-	"<brblue>":	"\x1B[34m;1m",
-	"<brmagenta>":	"\x1B[35m;1m",
-	"<brcyan>":	"\x1B[36m;1m",
-	"<brwhite>":	"\x1B[37m;1m",
+	"<brblack>":	"\x1B[90m",
+	"<brred>":	"\x1B[91m",
+	"<brgreen>":	"\x1B[92m",
+	"<bryellow>":	"\x1B[93m",
+	"<brblue>":	"\x1B[94m",
+	"<brmagenta>":	"\x1B[95m",
+	"<brcyan>":	"\x1B[96m",
+	"<brwhite>":	"\x1B[97m",
 	//background coloring
 	"<bgblack>":	"\x1B[40m",
 	"<bgred>":	"\x1B[41m",
@@ -307,14 +322,14 @@ func parseConfig(config []string, distroColor string) []string {
 	"<bgcyan>":	"\x1B[46m",
 	"<bgwhite>":	"\x1B[47m",
 	//bright background coloring
-	"<bgbrblack>":	"\x1B[40m;1m",
-	"<bgbrred>":	"\x1B[41m;1m",
-	"<bgbrgreen>":	"\x1B[42m;1m",
-	"<bgbryellow>":	"\x1B[43m;1m",
-	"<bgbrblue>":	"\x1B[44m;1m",
-	"<bgbrmagenta>":"\x1B[45m;1m",
-	"<bgbrcyan>":	"\x1B[46m;1m",
-	"<bgbrwhite>":	"\x1B[47m;1m",
+	"<bgbrblack>":	"\x1B[100m",
+	"<bgbrred>":	"\x1B[101m",
+	"<bgbrgreen>":	"\x1B[102m",
+	"<bgbryellow>":	"\x1B[103m",
+	"<bgbrblue>":	"\x1B[104m",
+	"<bgbrmagenta>":"\x1B[105m",
+	"<bgbrcyan>":	"\x1B[106m",
+	"<bgbrwhite>":	"\x1B[107m",
     }
 
     //parsing styling
@@ -356,14 +371,14 @@ func purgeConfig(config []string) []string {
 	"<cyan>":	"\x1B[36m",
 	"<white>":	"\x1B[37m",
 	//bright coloring
-	"<brblack>":	"\x1B[30m;1m",
-	"<brred>":	"\x1B[31m;1m",
-	"<brgreen>":	"\x1B[32m;1m",
-	"<bryellow>":	"\x1B[33m;1m",
-	"<brblue>":	"\x1B[34m;1m",
-	"<brmagenta>":	"\x1B[35m;1m",
-	"<brcyan>":	"\x1B[36m;1m",
-	"<brwhite>":	"\x1B[37m;1m",
+	"<brblack>":	"\x1B[30m",
+	"<brred>":	"\x1B[31m",
+	"<brgreen>":	"\x1B[32m",
+	"<bryellow>":	"\x1B[33m",
+	"<brblue>":	"\x1B[34m",
+	"<brmagenta>":	"\x1B[35m",
+	"<brcyan>":	"\x1B[36m",
+	"<brwhite>":	"\x1B[37m",
 	//background coloring
 	"<bgblack>":	"\x1B[40m",
 	"<bgred>":	"\x1B[41m",
@@ -374,14 +389,14 @@ func purgeConfig(config []string) []string {
 	"<bgcyan>":	"\x1B[46m",
 	"<bgwhite>":	"\x1B[47m",
 	//bright background coloring
-	"<bgbrblack>":	"\x1B[40m;1m",
-	"<bgbrred>":	"\x1B[41m;1m",
-	"<bgbrgreen>":	"\x1B[42m;1m",
-	"<bgbryellow>":	"\x1B[43m;1m",
-	"<bgbrblue>":	"\x1B[44m;1m",
-	"<bgbrmagenta>":"\x1B[45m;1m",
-	"<bgbrcyan>":	"\x1B[46m;1m",
-	"<bgbrwhite>":	"\x1B[47m;1m",
+	"<bgbrblack>":	"\x1B[40m",
+	"<bgbrred>":	"\x1B[41m",
+	"<bgbrgreen>":	"\x1B[42m",
+	"<bgbryellow>":	"\x1B[43m",
+	"<bgbrblue>":	"\x1B[44m",
+	"<bgbrmagenta>":"\x1B[45m",
+	"<bgbrcyan>":	"\x1B[46m",
+	"<bgbrwhite>":	"\x1B[47m",
     }
 
     //parsing styling
