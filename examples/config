@@ -1,6 +1,7 @@
  <distrocolor><d><b><u>$USER$<clear>@<distrocolor><d><b><u>$HOSTNAME$
  <distrocolor><b>os<clear>     $PRETTY_NAME$
  <distrocolor><b>kernel<clear> $KERNEL_VERSION$
- <distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$ MiB
- <distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$ MiB
- <distrocolor><b>uptime<clear> $UPTIME_HRS$:$UPTIME_MINS$:$UPTIME_SECS$
+ <distrocolor><b>uptime<clear> $UPTIME_HRS$h $UPTIME_MINS$m
+ <distrocolor><b>pkgs<clear>   $PM_COUNT$
+ <distrocolor><b>memory<clear> $MEMFREE_MB$ / $MEMTOTAL_MB$M
+ <distrocolor><b>swap<clear>   $SWAPFREE_MB$ / $SWAPTOTAL_MB$M

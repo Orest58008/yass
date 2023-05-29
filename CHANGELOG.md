@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Plugin system
 * Refactor README
 
+## [1.5.1]
+* Added main package manager detection
+* Moved environment variable detection to the bottom so you can replace arbitrary values at the runtime
+* Updated examples
+
 ## [1.5.0]
 * Added package count support
   * Currently supported package managers: apk, dnf, dpkg, equery(emerge), guix, pacman, pkginfo(pkgutils), rpm, xbps-query(xbps), yum

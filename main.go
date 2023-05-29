@@ -62,10 +62,6 @@ func main() {
 	}
     }
 
-    //environment variables
-    envVars := os.Environ()
-    appendArray(envVars, mainMap, "=")
-
     //reading os-release
     osrelease := read("/etc/os-release")
     for i := range osrelease {
@@ -134,14 +130,23 @@ func main() {
 	"xbps-query":	{"-l",},
 	"yum":		{"list", "installed",},
     }
-
+    
+    maxCount := 0
     for pm, pmargs := range packageManagers {
 	out, err := exec.Command(pm, pmargs...).Output()
 	if err == nil {
 	    count := strings.Count(string(out), "\n")
 	    mainMap[strings.ToUpper(pm)] = strconv.Itoa(count)
+	    if count > maxCount {
+		mainMap["PM_NAME"] = pm
+		mainMap["PM_COUNT"] = strconv.Itoa(count)
+	    }
 	}
     }
+
+    //environment variables
+    envVars := os.Environ()
+    appendArray(envVars, mainMap, "=")
 
     //dumpmap behaviour
     if dumpmap { dumpMap() }

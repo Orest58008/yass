@@ -28,4 +28,4 @@
   * the name should be in ALL CAPS
   * by default, meminfo values are in kB, for values in MiB and GiB use `VARIABLE_MB` and `VARIABLE_GB`
   * uptime in seconds, minutes and hours is `UPTIME_SECS`, `UPTIME_MINS`, `UPTIME_HRS`
-  * package count is `PACKAGEMANAGER`
+  * `PM_NAME` for your package manager's name. `PM_COUNT` for number of packages installed through it. To get specific package manager's number of packages, use it's name in all uppercase
