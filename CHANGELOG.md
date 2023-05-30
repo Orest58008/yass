@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Plugin system
 * Refactor README
 
+## [to be released]
+* Added support for more package managers and fixed old ones
+* Updated LICENSE to ISC to comply with MIT License under which pfetch and ufetch are licensed
+
 ## [1.6.0]
 * Added main package manager detection
 * Added motherboard model support
@@ -21,7 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.0]
 * Added package count support
-  * Currently supported package managers: apk, dnf, dpkg, equery(emerge), guix, pacman, pkginfo(pkgutils), rpm, xbps-query(xbps), yum
 * Fixed vertical spacing issues
 
 ### [1.4.2]

@@ -126,30 +126,42 @@ func main() {
     mainMap["UPTIME_HRS"] = strconv.Itoa(uptimeHrs)
     mainMap["UPTIME_MINS"] = strconv.Itoa(uptimeMins)
     mainMap["UPTIME_SECS"] = strconv.Itoa(uptimeSecs)
-    
+
     //reading package counts
     packageManagers := map[string][]string{
-	"apk":		{"info",},
-	"dnf":		{"list", "installed",},
-	"dpkg":		{"-l",},
-	"equery":	{"list", "\"*\"",},
-	"guix":		{"package", "--list-installed",},
-	"pacman":	{"-Q",},
-	"pkginfo":	{"-i",},
-	"rpm":		{"-qa",},
-	"xbps-query":	{"-l",},
-	"yum":		{"list", "installed",},
+	//listing packages with command
+	"apk":		{"apk", "info"},
+	"bonsai":	{"bonsai", "list"},
+	"brew":		{"brew", "list"},
+	"crux":		{"pkginfo", "-i"},
+	"dpkg":		{"dpkg", "-l"},
+	"guix":		{"quix", "package", "--list-installed"},
+	"opkg":		{"opkg", "list-installed"},
+	"pacman":	{"pacman", "-Qq"},
+	"rpm":		{"rpm", "-qa"},
+	"xbps-query":	{"xbps-query", "-l"},
+	//directories containing packages
+	"cpt-list":	{"ls", "/var/db/cpt/installed/*/"},
+	"emerge":	{"ls", "/var/db/pkg/*/*/"},
+	"eopkg":	{"ls", "/var/lib/eopkg/package/*"},
+	"kiss":		{"ls", "/var/db/kiss/installed/*/"},
+	"nix":		{"ls", "/nix/store/*/"},
+	"pkgtool":	{"ls", "/var/log/packages/*"},
     }
-    
+
     maxCount := 0
     for pm, pmargs := range packageManagers {
-	out, err := exec.Command(pm, pmargs...).Output()
+	path, err := exec.LookPath(pm)
 	if err == nil {
+	    out, _ := exec.Command(pmargs[0], pmargs[1:]...).Output()
 	    count := strings.Count(string(out), "\n")
-	    mainMap[strings.ToUpper(pm)] = strconv.Itoa(count)
+	    mainMap[strings.ToUpper(pm) + "_COUNT"] = strconv.Itoa(count)
+	    mainMap[strings.ToUpper(pm) + "_PATH"] = path
 	    if count > maxCount {
-		mainMap["PM_NAME"] = pm
+		maxCount = count
 		mainMap["PM_COUNT"] = strconv.Itoa(count)
+		mainMap["PM_NAME"] = pm
+		mainMap["PM_PATH"] = path
 	    }
 	}
     }
