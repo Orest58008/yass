@@ -137,16 +137,16 @@ func main() {
 	"dpkg":		{"dpkg", "-l"},
 	"guix":		{"quix", "package", "--list-installed"},
 	"opkg":		{"opkg", "list-installed"},
-	"pacman":	{"pacman", "-Qq"},
 	"rpm":		{"rpm", "-qa"},
 	"xbps-query":	{"xbps-query", "-l"},
 	//directories containing packages
-	"cpt-list":	{"ls", "/var/db/cpt/installed/*/"},
-	"emerge":	{"ls", "/var/db/pkg/*/*/"},
-	"eopkg":	{"ls", "/var/lib/eopkg/package/*"},
-	"kiss":		{"ls", "/var/db/kiss/installed/*/"},
-	"nix":		{"ls", "/nix/store/*/"},
-	"pkgtool":	{"ls", "/var/log/packages/*"},
+	"cpt-list":	{"ls", "/var/db/cpt/installed/"},
+	"emerge":	{"ls", "/var/db/pkg/*/"},
+	"eopkg":	{"ls", "/var/lib/eopkg/package/"},
+	"kiss":		{"ls", "/var/db/kiss/installed/"},
+	"nix":		{"ls", "/nix/store/"},
+	"pacman":	{"ls", "/var/lib/pacman/local/"},
+	"pkgtool":	{"ls", "/var/log/packages/"},
     }
 
     maxCount := 0
@@ -172,8 +172,7 @@ func main() {
 
     //environment variables
     //this MUST be after all other reads
-    envVars := os.Environ()
-    appendArray(envVars, mainMap, "=")
+    appendArray(os.Environ(), mainMap, "=")
 
     //dumpmap behaviour
     if dumpmap { dumpMap() }
