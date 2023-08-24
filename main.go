@@ -180,7 +180,6 @@ func main() {
     //updating ascii
     if ascii == "" { ascii = mainMap["ID"] }
     if _, ok := distros.Distros[ascii]; !ok { ascii = "linux" }
-    if ascii == "opensuse-tumbleweed" || ascii == "opensuse-leap" { ascii = "suse" }
 
     //reading configs
     var config = []string{"<distrocolor><d><b><u>$USER$<clear>@<distrocolor><d><b><u>$HOSTNAME$",
