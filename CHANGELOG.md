@@ -6,14 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [to be added]
-* Change package detection from command-based to directory-based([reasons](https://codeberg.org/Orest58008/pm-test))
 * Current time support
 * Main package manager detection
 * NO\_COLOR support
 * Plugin system
 * Refactor README
+* Fix weird error on raspbian and opensuse-tumbleweed logos
 
 ## [to be released]
+* Added new logos & fixed old ones
 * Added support for more package managers and fixed old ones
 * Updated LICENSE to ISC to comply with MIT License under which pfetch and ufetch are licensed
 
